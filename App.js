@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import LandingScreen from './screen/LandingScreen';
 import Login from './screen/Login';
 import Signup from './screen/Signup';
+import AuthTest from './components/AuthTest';
 import HomeScreen from './screen/HomeScreen';
 import AttractionDetails from './screen/AttractionDetails';
 import ProfileScreen from './screen/ProfileScreen';
@@ -29,11 +30,14 @@ function AuthScreens() {
       <AuthStack.Screen name="Landing" component={LandingScreen} />
       <AuthStack.Screen name="Login" component={Login} />
       <AuthStack.Screen name="Signup" component={Signup} />
+      <AuthStack.Screen name="AuthTest" component={AuthTest} />
     </AuthStack.Navigator>
   );
 }
 
-function MainTabs() {
+function MainTabs({ route }) {
+  const userData = route.params?.userData || {};
+  
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -50,35 +54,42 @@ function MainTabs() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#FF6B6B',
+        tabBarActiveTintColor: '#A855F7',
         tabBarInactiveTintColor: 'gray',
         headerStyle: {
-          backgroundColor: '#FF6B6B',
+          backgroundColor: '#FFFFFF',
         },
-        headerTintColor: '#fff',
+        headerTintColor: '#A855F7',
+        headerTitleStyle: {
+          color: '#A855F7',
+          fontWeight: '600',
+        },
       })}
     >
       <Tab.Screen 
         name="Home" 
-        component={HomeScreen}
         options={{
-          title: 'Discover Cebu'
+          title: userData.name ? `Welcome, ${userData.name.split(' ')[0]}!` : 'Discover Cebu'
         }}
-      />
+      >
+        {(props) => <HomeScreen {...props} userData={userData} />}
+      </Tab.Screen>
       <Tab.Screen 
         name="Search" 
-        component={SearchScreen}
         options={{
           title: 'Search Places'
         }}
-      />
+      >
+        {(props) => <SearchScreen {...props} userData={userData} />}
+      </Tab.Screen>
       <Tab.Screen 
         name="Profile" 
-        component={ProfileScreen}
         options={{
           title: 'My Profile'
         }}
-      />
+      >
+        {(props) => <ProfileScreen {...props} userData={userData} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
@@ -86,7 +97,19 @@ function MainTabs() {
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator 
+        screenOptions={{ 
+          headerShown: false,
+          headerStyle: {
+            backgroundColor: '#FFFFFF',
+          },
+          headerTintColor: '#A855F7',
+          headerTitleStyle: {
+            color: '#A855F7',
+            fontWeight: '600',
+          },
+        }}
+      >
         <Stack.Screen name="Auth" component={AuthScreens} />
         <Stack.Screen name="MainApp" component={MainTabs} />
         <Stack.Screen
@@ -96,9 +119,9 @@ export default function App() {
             headerShown: true,
             title: 'Attraction Details',
             headerStyle: {
-              backgroundColor: '#FF6B6B',
+              backgroundColor: '#FFFFFF',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#A855F7',
           }}
         />
         <Stack.Screen
@@ -108,9 +131,9 @@ export default function App() {
             headerShown: true,
             title: 'Edit Profile',
             headerStyle: {
-              backgroundColor: '#FF6B6B',
+              backgroundColor: '#FFFFFF',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#A855F7',
           }}
         />
         <Stack.Screen
@@ -120,9 +143,9 @@ export default function App() {
             headerShown: true,
             title: 'Favorite Spots',
             headerStyle: {
-              backgroundColor: '#FF6B6B',
+              backgroundColor: '#FFFFFF',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#A855F7',
           }}
         />
         <Stack.Screen
@@ -132,9 +155,9 @@ export default function App() {
             headerShown: true,
             title: 'My Reviews',
             headerStyle: {
-              backgroundColor: '#FF6B6B',
+              backgroundColor: '#FFFFFF',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#A855F7',
           }}
         />
         <Stack.Screen
@@ -144,9 +167,9 @@ export default function App() {
             headerShown: true,
             title: 'Travel History',
             headerStyle: {
-              backgroundColor: '#FF6B6B',
+              backgroundColor: '#FFFFFF',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#A855F7',
           }}
         />
         <Stack.Screen
@@ -156,9 +179,9 @@ export default function App() {
             headerShown: true,
             title: 'Language',
             headerStyle: {
-              backgroundColor: '#FF6B6B',
+              backgroundColor: '#FFFFFF',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#A855F7',
           }}
         />
         <Stack.Screen
@@ -168,9 +191,9 @@ export default function App() {
             headerShown: true,
             title: 'Settings',
             headerStyle: {
-              backgroundColor: '#FF6B6B',
+              backgroundColor: '#FFFFFF',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#A855F7',
           }}
         />
         <Stack.Screen
@@ -180,9 +203,9 @@ export default function App() {
             headerShown: true,
             title: 'Help & Support',
             headerStyle: {
-              backgroundColor: '#FF6B6B',
+              backgroundColor: '#FFFFFF',
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#A855F7',
           }}
         />
       </Stack.Navigator>

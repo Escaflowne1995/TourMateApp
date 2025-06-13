@@ -7,303 +7,456 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-  ImageBackground,
   Dimensions,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth, db } from '../components/firebaseConfig';
+import { doc, setDoc } from 'firebase/firestore';
 
 const { width, height } = Dimensions.get('window');
 
-const Signup = ({ navigation }) => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-  });
-  const [errors, setErrors] = useState({});
+const validationSchema = Yup.object().shape({
+  fullName: Yup.string()
+    .min(2, 'Name must be at least 2 characters')
+    .required('Full name is required'),
+  email: Yup.string()
+    .email('Please enter a valid email address')
+    .required('Email is required'),
+  phone: Yup.string()
+    .matches(/^\+?[\d\s-]{10,}$/, 'Please enter a valid phone number')
+    .nullable(),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords do not match')
+    .required('Please confirm your password'),
+});
+
+const Signup = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const validateForm = () => {
-    let newErrors = {};
-    let isValid = true;
-
-    // Full Name validation
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-      isValid = false;
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-      isValid = false;
-    } else if (!emailRegex.test(formData.email.trim())) {
-      newErrors.email = 'Please enter a valid email address';
-      isValid = false;
-    }
-
-    // Phone validation (optional)
-    if (formData.phone.trim() && !/^\+?[\d\s-]{10,}$/.test(formData.phone.trim())) {
-      newErrors.phone = 'Please enter a valid phone number';
-      isValid = false;
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-      isValid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-      isValid = false;
-    }
-
-    // Confirm Password validation
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-      isValid = false;
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
-  };
-
-  const handleSignup = async () => {
-    if (validateForm()) {
-      setIsLoading(true);
+  const handleSignup = async (values) => {
+    setIsLoading(true);
+    try {
+      console.log('Creating user with email:', values.email);
+      
+      // Create user with Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
+      
+      const user = userCredential.user;
+      console.log('User created successfully:', user.uid);
+      
+      // Update user profile with display name
+      await updateProfile(user, {
+        displayName: values.fullName
+      });
+      console.log('User profile updated successfully');
+      
+      // Save additional user data to Firestore
+      console.log('Saving user data to Firestore...');
       try {
-        // Mock signup - in a real app, this would be replaced with actual registration
-        setTimeout(() => {
-          Alert.alert(
-            'Success',
-            'Account created successfully! Please log in.',
-            [{ text: 'OK', onPress: () => navigation.replace('Login') }]
-          );
-          setIsLoading(false);
-        }, 1000);
-      } catch (error) {
-        console.error('Signup error:', error);
-        Alert.alert('Signup Error', 'Failed to create account. Please try again.');
-        setIsLoading(false);
+        await setDoc(doc(db, 'users', user.uid), {
+          fullName: values.fullName,
+          email: values.email,
+          phone: values.phone || '',
+          createdAt: new Date().toISOString(),
+          uid: user.uid,
+          avatar: 'https://via.placeholder.com/150/cccccc/969696?text=User',
+          location: '',
+          bio: '',
+        });
+        console.log('User data saved to Firestore successfully!');
+      } catch (firestoreError) {
+        console.error('Firestore save error:', firestoreError);
+        Alert.alert('Note', 'Account created but profile data save failed. You can update it later.');
       }
-    }
-  };
+      
+      // Navigate directly to main app after successful signup
+      const userData = {
+        uid: user.uid,
+        email: values.email,
+        fullName: values.fullName,
+        phone: values.phone || '',
+        avatar: 'https://via.placeholder.com/150/cccccc/969696?text=User',
+        location: '',
+        bio: '',
+      };
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setErrors(prev => ({ ...prev, [field]: '' }));
+      navigation.reset({
+        index: 0,
+        routes: [{ 
+          name: 'MainApp', 
+          params: { 
+            userEmail: userData.email,
+            userName: userData.fullName,
+            userPhone: userData.phone,
+            userAvatar: userData.avatar,
+            userData: userData
+          } 
+        }],
+      });
+      
+    } catch (error) {
+      console.error('Signup error:', error);
+      let errorMessage = 'Failed to create account. Please try again.';
+      
+      // Handle specific Firebase errors
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = 'This email address is already registered.';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'Password should be at least 6 characters.';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Please enter a valid email address.';
+          break;
+        default:
+          errorMessage = error.message;
+      }
+      
+      Alert.alert('Signup Error', errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/icon.png')}
-      style={styles.backgroundImage}
-      blurRadius={20}
+    <LinearGradient
+      colors={['#A855F7', '#9333EA']}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
     >
-      <LinearGradient
-        colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
-        style={styles.gradient}
+      <KeyboardAvoidingView 
+        style={styles.keyboardContainer}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView
+        <ScrollView 
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.container}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join us to explore Cebu</Text>
-
-            <View style={styles.form}>
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Full Name"
-                  placeholderTextColor="rgba(255,255,255,0.7)"
-                  value={formData.fullName}
-                  onChangeText={(text) => handleInputChange('fullName', text)}
-                  editable={!isLoading}
-                />
-              </View>
-              {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
-
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email"
-                  placeholderTextColor="rgba(255,255,255,0.7)"
-                  value={formData.email}
-                  onChangeText={(text) => handleInputChange('email', text)}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  editable={!isLoading}
-                />
-              </View>
-              {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Phone Number (Optional)"
-                  placeholderTextColor="rgba(255,255,255,0.7)"
-                  value={formData.phone}
-                  onChangeText={(text) => handleInputChange('phone', text)}
-                  keyboardType="phone-pad"
-                  editable={!isLoading}
-                />
-              </View>
-              {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
-
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Password"
-                  placeholderTextColor="rgba(255,255,255,0.7)"
-                  value={formData.password}
-                  onChangeText={(text) => handleInputChange('password', text)}
-                  secureTextEntry
-                  editable={!isLoading}
-                />
-              </View>
-              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Confirm Password"
-                  placeholderTextColor="rgba(255,255,255,0.7)"
-                  value={formData.confirmPassword}
-                  onChangeText={(text) => handleInputChange('confirmPassword', text)}
-                  secureTextEntry
-                  editable={!isLoading}
-                />
-              </View>
-              {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
-
-              <TouchableOpacity
-                style={[styles.signupButton, isLoading && styles.disabledButton]}
-                onPress={handleSignup}
-                disabled={isLoading}
-              >
-                <LinearGradient
-                  colors={['#FF6B6B', '#FF8E8E']}
-                  style={styles.gradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                >
-                  {isLoading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.signupButtonText}>Sign Up</Text>
-                  )}
-                </LinearGradient>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.loginLink}
-                onPress={() => navigation.navigate('Login')}
-                disabled={isLoading}
-              >
-                <Text style={styles.loginText}>
-                  Already have an account? <Text style={styles.loginLinkText}>Sign In</Text>
-                </Text>
-              </TouchableOpacity>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.appIcon}>
+              <Ionicons name="person-add" size={32} color="#FFFFFF" />
             </View>
+            <Text style={styles.appName}>Cebu Explorer</Text>
+            <Text style={styles.welcomeText}>Welcome!</Text>
+            <Text style={styles.subtitle}>Create your account to get started</Text>
+          </View>
+
+          {/* Signup Card */}
+          <View style={styles.signupCard}>
+            <Formik
+              initialValues={{
+                fullName: '',
+                email: route?.params?.email || '',
+                phone: '',
+                password: '',
+                confirmPassword: '',
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSignup}
+            >
+              {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                <View style={styles.formContainer}>
+                  {/* Full Name Input */}
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>Full Name</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Enter your full name"
+                      placeholderTextColor="#9CA3AF"
+                      value={values.fullName}
+                      onChangeText={handleChange('fullName')}
+                      onBlur={handleBlur('fullName')}
+                      editable={!isLoading}
+                    />
+                  </View>
+                  {touched.fullName && errors.fullName && (
+                    <Text style={styles.errorText}>{errors.fullName}</Text>
+                  )}
+
+                  {/* Email Input */}
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>Email</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Enter your email"
+                      placeholderTextColor="#9CA3AF"
+                      value={values.email}
+                      onChangeText={handleChange('email')}
+                      onBlur={handleBlur('email')}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      editable={!isLoading}
+                    />
+                  </View>
+                  {touched.email && errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                  )}
+
+                  {/* Phone Input */}
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>Phone Number</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Enter your phone number"
+                      placeholderTextColor="#9CA3AF"
+                      value={values.phone}
+                      onChangeText={handleChange('phone')}
+                      onBlur={handleBlur('phone')}
+                      keyboardType="phone-pad"
+                      editable={!isLoading}
+                    />
+                  </View>
+                  {touched.phone && errors.phone && (
+                    <Text style={styles.errorText}>{errors.phone}</Text>
+                  )}
+
+                  {/* Password Input */}
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>Password</Text>
+                    <View style={styles.passwordContainer}>
+                      <TextInput
+                        style={[styles.input, styles.passwordInput]}
+                        placeholder="Enter your password"
+                        placeholderTextColor="#9CA3AF"
+                        value={values.password}
+                        onChangeText={handleChange('password')}
+                        onBlur={handleBlur('password')}
+                        secureTextEntry={!showPassword}
+                        editable={!isLoading}
+                      />
+                      <TouchableOpacity
+                        style={styles.eyeButton}
+                        onPress={() => setShowPassword(!showPassword)}
+                        disabled={isLoading}
+                      >
+                        <Ionicons
+                          name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                          size={20}
+                          color="#9CA3AF"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  {touched.password && errors.password && (
+                    <Text style={styles.errorText}>{errors.password}</Text>
+                  )}
+
+                  {/* Confirm Password Input */}
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.inputLabel}>Confirm Password</Text>
+                    <View style={styles.passwordContainer}>
+                      <TextInput
+                        style={[styles.input, styles.passwordInput]}
+                        placeholder="Confirm your password"
+                        placeholderTextColor="#9CA3AF"
+                        value={values.confirmPassword}
+                        onChangeText={handleChange('confirmPassword')}
+                        onBlur={handleBlur('confirmPassword')}
+                        secureTextEntry={!showConfirmPassword}
+                        editable={!isLoading}
+                      />
+                      <TouchableOpacity
+                        style={styles.eyeButton}
+                        onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                        disabled={isLoading}
+                      >
+                        <Ionicons
+                          name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                          size={20}
+                          color="#9CA3AF"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  {touched.confirmPassword && errors.confirmPassword && (
+                    <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                  )}
+
+                  {/* Create Button */}
+                  <TouchableOpacity 
+                    style={[styles.createButton, isLoading && styles.disabledButton]} 
+                    onPress={handleSubmit}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.createButtonText}>Create</Text>
+                    )}
+                  </TouchableOpacity>
+
+                  {/* Sign In Link */}
+                  <TouchableOpacity 
+                    style={styles.signInLink}
+                    onPress={() => navigation.navigate('Login')}
+                    disabled={isLoading}
+                  >
+                    <Text style={styles.signInText}>
+                      Already have an account? <Text style={styles.signInLinkText}>Log In</Text>
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </Formik>
           </View>
         </ScrollView>
-      </LinearGradient>
-    </ImageBackground>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  backgroundImage: {
+  container: {
     flex: 1,
-    width: width,
-    height: height,
   },
-  gradient: {
+  keyboardContainer: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    padding: 20,
     justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 40,
+    minHeight: height,
   },
-  title: {
+  header: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  appIcon: {
+    width: 64,
+    height: 64,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  appName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 24,
+  },
+  welcomeText: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: 10,
+    color: '#FFFFFF',
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     color: 'rgba(255,255,255,0.8)',
-    textAlign: 'center',
-    marginBottom: 40,
   },
-  form: {
+  signupCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  formContainer: {
     width: '100%',
   },
-  inputWrapper: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 15,
-    marginBottom: 15,
-    overflow: 'hidden',
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
   },
   input: {
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     fontSize: 16,
-    color: '#fff',
+    color: '#374151',
+    backgroundColor: '#F9FAFB',
   },
-  errorText: {
-    color: '#FF6B6B',
-    fontSize: 12,
-    marginTop: -10,
-    marginBottom: 10,
-    marginLeft: 5,
+  passwordContainer: {
+    position: 'relative',
   },
-  signupButton: {
+  passwordInput: {
+    paddingRight: 50,
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 16,
+    top: 14,
+    padding: 4,
+  },
+  createButton: {
+    backgroundColor: '#A855F7',
     borderRadius: 25,
-    overflow: 'hidden',
-    marginTop: 20,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 24,
+    shadowColor: '#A855F7',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  signupButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 15,
+  createButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
-  loginLink: {
-    marginTop: 20,
+  signInLink: {
     alignItems: 'center',
   },
-  loginText: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 16,
+  signInText: {
+    fontSize: 14,
+    color: '#6B7280',
   },
-  loginLinkText: {
-    color: '#FF6B6B',
-    fontWeight: 'bold',
+  signInLinkText: {
+    color: '#A855F7',
+    fontWeight: '600',
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 12,
+    marginTop: -15,
+    marginBottom: 10,
+    marginLeft: 4,
   },
   disabledButton: {
-    opacity: 0.5,
+    opacity: 0.6,
   },
 });
 

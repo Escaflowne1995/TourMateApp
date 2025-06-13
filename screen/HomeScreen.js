@@ -92,7 +92,8 @@ const localDelicacies = [
   },
 ];
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, route, userData: userDataProp }) => {
+  const userData = userDataProp || route.params?.userData || {};
   const renderAttractionItem = ({ item }) => (
     <TouchableOpacity
       style={styles.attractionCard}
@@ -137,15 +138,18 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+      end={{ x: 0, y: 1 }}
     >
       <ScrollView>
         <View style={styles.header}>
-          <Text style={styles.welcomeText}>Discover Cebu</Text>
-          <Text style={styles.subText}>Experience the Queen City of the South</Text>
+          <Text style={styles.welcomeText}>
+            Welcome, {userData.fullName || userData.name || 'Explorer'}!
+          </Text>
+          <Text style={styles.subText}>Discover Cebu</Text>
+          <Text style={styles.subTextSmall}>Experience the Queen City of the South</Text>
         </View>
 
         <View style={styles.section}>
@@ -199,7 +203,12 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 16,
-    color: '#fff',
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 5,
+  },
+  subTextSmall: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
   },
   section: {
@@ -213,22 +222,14 @@ const styles = StyleSheet.create({
   },
   attractionCard: {
     width: 280,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 15,
     marginRight: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
   },
   attractionImage: {
     width: '100%',
     height: 180,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
   },
   attractionInfo: {
     padding: 15,
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
   },
   attractionLocation: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
   },
   ratingPrice: {
@@ -249,47 +250,45 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   rating: {
-    color: '#ffd700',
+    color: '#A855F7',
     fontSize: 14,
+    fontWeight: '600',
   },
   destinationCard: {
     width: 160,
     marginRight: 15,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 15,
+    overflow: 'hidden',
   },
   destinationImage: {
     width: '100%',
     height: 200,
-    borderRadius: 15,
   },
   destinationName: {
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 10,
     color: '#fff',
+    paddingHorizontal: 10,
   },
   destinationLocation: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
   },
   delicacyCard: {
     width: 250,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 15,
     marginRight: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
   },
   delicacyImage: {
     width: '100%',
     height: 150,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
   },
   delicacyInfo: {
     padding: 15,
@@ -301,17 +300,17 @@ const styles = StyleSheet.create({
   },
   delicacyLocation: {
     fontSize: 14,
-    color: '#ffd700',
+    color: '#A855F7',
     marginTop: 5,
   },
   delicacyDescription: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
   },
   delicacyPrice: {
     fontSize: 14,
-    color: '#ffd700',
+    color: '#A855F7',
     marginTop: 8,
     fontWeight: 'bold',
   },

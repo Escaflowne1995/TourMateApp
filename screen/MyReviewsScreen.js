@@ -91,7 +91,7 @@ const MyReviewsScreen = ({ navigation }) => {
       >
         <Image 
           source={item.image} 
-          style={styles.spotImage}
+          style={styles.image}
           accessible={true}
           accessibilityRole="image"
           accessibilityLabel={`Photo of ${item.spotName}`}
@@ -152,7 +152,7 @@ const MyReviewsScreen = ({ navigation }) => {
             <Ionicons 
               name="heart-outline" 
               size={16} 
-              color="#FF6B6B"
+              color="#A855F7"
               accessible={false}
             />
             <Text 
@@ -222,8 +222,10 @@ const MyReviewsScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
     >
       <View 
         style={styles.content}
@@ -269,15 +271,14 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   header: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 20,
     marginHorizontal: 15,
     marginTop: 15,
     borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
   },
   list: {
@@ -299,39 +300,31 @@ const styles = StyleSheet.create({
     padding: 40,
   },
   reviewCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 15,
     marginBottom: 15,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  image: {
+    width: '100%',
+    height: 150,
+    resizeMode: 'cover',
+  },
+  cardContent: {
+    padding: 15,
   },
   cardHeader: {
-    flexDirection: 'row',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  spotImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 10,
-    marginRight: 15,
+    marginBottom: 10,
   },
   spotInfo: {
     flex: 1,
     justifyContent: 'center',
   },
   spotName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 4,
+    marginBottom: 5,
   },
   locationContainer: {
     flexDirection: 'row',
@@ -340,19 +333,18 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginLeft: 4,
   },
   reviewDate: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: 'rgba(255,255,255,0.8)',
   },
   reviewContent: {
     padding: 15,
   },
   ratingContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
   },
@@ -367,26 +359,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   reviewText: {
-    fontSize: 16,
-    color: '#fff',
-    lineHeight: 24,
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
+    lineHeight: 20,
     marginBottom: 15,
   },
   reviewStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingTop: 15,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginRight: 15,
   },
   statText: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginLeft: 6,
+    color: 'rgba(255,255,255,0.8)',
+    marginLeft: 4,
   },
   emptyContainer: {
     alignItems: 'center',
@@ -401,13 +392,13 @@ const styles = StyleSheet.create({
   },
   emptySubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     textAlign: 'center',
     marginBottom: 30,
     lineHeight: 24,
   },
   exploreButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#A855F7',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,

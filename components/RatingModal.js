@@ -52,7 +52,7 @@ const RatingModal = ({ visible, onClose, onSubmit, attractionName }) => {
                 <Ionicons
                   name={rating >= star ? 'star' : 'star-outline'}
                   size={40}
-                  color={rating >= star ? '#FFD700' : '#ccc'}
+                  color={rating >= star ? '#A855F7' : 'rgba(255,255,255,0.3)'}
                 />
               </TouchableOpacity>
             ))}
@@ -72,7 +72,14 @@ const RatingModal = ({ visible, onClose, onSubmit, attractionName }) => {
             onChangeText={setReview}
           />
 
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <TouchableOpacity
+            style={[styles.submitButton, { backgroundColor: '#A855F7' }]}
+            onPress={handleSubmit}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Submit Rating"
+            accessibilityHint="Submit your rating and review"
+          >
             <Text style={styles.submitButtonText}>Submit Rating</Text>
           </TouchableOpacity>
         </View>
@@ -90,10 +97,12 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '90%',
-    backgroundColor: 'rgba(30,30,30,0.95)',
+    backgroundColor: 'rgba(0,0,0,0.9)',
     borderRadius: 20,
     padding: 20,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   closeButton: {
     position: 'absolute',
@@ -129,7 +138,7 @@ const styles = StyleSheet.create({
   reviewInput: {
     width: '100%',
     backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 10,
+    borderRadius: 15,
     padding: 15,
     color: '#fff',
     height: 100,
@@ -137,7 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   submitButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#A855F7',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,

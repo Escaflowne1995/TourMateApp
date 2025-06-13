@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { signOut } from 'firebase/auth';
+import { auth } from '../components/firebaseConfig';
 
-const ProfileScreen = ({ navigation, route }) => {
+const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const userData = route.params?.userData || {};
+  const userData = userDataProp || route.params?.userData || {};
 
   const userProfile = {
     name: userData.name || 'Guest User',
@@ -97,10 +99,11 @@ const ProfileScreen = ({ navigation, route }) => {
         },
         {
           text: 'Logout',
-          onPress: () => {
+          onPress: async () => {
             setIsLoading(true);
-            // Mock logout
-            setTimeout(() => {
+            try {
+              // Firebase logout
+              await signOut(auth);
               navigation.reset({
                 index: 0,
                 routes: [{ 
@@ -111,7 +114,11 @@ const ProfileScreen = ({ navigation, route }) => {
                 }],
               });
               setIsLoading(false);
-            }, 1000);
+            } catch (error) {
+              console.error('Logout error:', error);
+              Alert.alert('Error', 'Failed to logout. Please try again.');
+              setIsLoading(false);
+            }
           },
           style: 'destructive',
         },
@@ -122,10 +129,10 @@ const ProfileScreen = ({ navigation, route }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+      end={{ x: 0, y: 1 }}
     >
       <ScrollView 
         style={styles.scrollView}
@@ -251,7 +258,7 @@ const ProfileScreen = ({ navigation, route }) => {
         >
           {isLoading ? (
             <ActivityIndicator 
-              color="#FF6B6B"
+              color="#A855F7"
               accessible={true}
               accessibilityLabel="Logging out, please wait"
             />
@@ -266,7 +273,7 @@ const ProfileScreen = ({ navigation, route }) => {
               <Text style={styles.logoutText}>Logout</Text>
             </>
           )}
-                  </TouchableOpacity>
+        </TouchableOpacity>
         </View>
       </ScrollView>
     </LinearGradient>
@@ -283,14 +290,17 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    backgroundColor: 'transparent',
   },
   header: {
     paddingTop: 60,
     paddingBottom: 30,
+    backgroundColor: 'transparent',
   },
   contentSection: {
     flex: 1,
     paddingTop: 20,
+    backgroundColor: 'transparent',
   },
   profileHeader: {
     alignItems: 'center',
@@ -311,25 +321,18 @@ const styles = StyleSheet.create({
   },
   email: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.9)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
     textAlign: 'center',
   },
   statsContainer: {
     flexDirection: 'row',
-
     padding: 20,
     marginHorizontal: 20,
     marginTop: 0,
     marginBottom: 0,
     borderRadius: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 0},
-    shadowOpacity: 0.25,
-    shadowRadius: 0,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   statItem: {
     flex: 1,
@@ -342,31 +345,24 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255, 255, 255, 0.8)',
     marginTop: 5,
   },
   menuContainer: {
-
     marginTop: 10,
     paddingVertical: 10,
     borderRadius: 15,
     marginHorizontal: 20,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 20,
+    minHeight: 60,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-    minHeight: 60,
   },
   menuItemLeft: {
     flexDirection: 'row',
@@ -380,27 +376,20 @@ const styles = StyleSheet.create({
   },
   menuItemValue: {
     fontSize: 14,
-    color: '#ffd700',
+    color: '#A855F7',
     fontWeight: 'bold',
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-
     marginTop: 20,
     marginBottom: 30,
     marginHorizontal: 20,
     padding: 18,
-    borderRadius: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    borderRadius: 25,
     minHeight: 56,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: '#A855F7',
   },
   logoutText: {
     fontSize: 16,
@@ -410,4 +399,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen; 
+export default ProfileScreen;

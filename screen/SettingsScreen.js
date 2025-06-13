@@ -182,7 +182,7 @@ const SettingsScreen = ({ navigation }) => {
         <Ionicons 
           name={item.icon} 
           size={24} 
-          color="#FF6B6B" 
+          color="#A855F7" 
           style={styles.settingIcon}
           accessible={false}
         />
@@ -195,7 +195,7 @@ const SettingsScreen = ({ navigation }) => {
         <Switch
           value={item.value}
           onValueChange={() => toggleSetting(item.id)}
-          trackColor={{ false: '#e9ecef', true: '#FF6B6B' }}
+          trackColor={{ false: '#e9ecef', true: '#A855F7' }}
           thumbColor={item.value ? '#fff' : '#f4f3f4'}
           accessible={false}
         />
@@ -227,8 +227,10 @@ const SettingsScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
     >
       <ScrollView 
         style={styles.scrollView}
@@ -274,15 +276,14 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   header: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 20,
     marginHorizontal: 15,
     marginTop: 15,
     borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
   },
   section: {
@@ -305,20 +306,18 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   sectionContent: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     marginHorizontal: 15,
     borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
     minHeight: 80,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   settingContent: {
     flexDirection: 'row',
@@ -341,7 +340,7 @@ const styles = StyleSheet.create({
   },
   settingSubtitle: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     lineHeight: 20,
   },
   footer: {
@@ -350,7 +349,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: '#adb5bd',
+    color: 'rgba(255,255,255,0.8)',
   },
 });
 

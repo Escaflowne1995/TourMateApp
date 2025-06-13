@@ -16,10 +16,10 @@ const { width, height } = Dimensions.get('window');
 const LandingScreen = ({ navigation }) => {
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+      end={{ x: 0, y: 1 }}
     >
       <StatusBar translucent backgroundColor="transparent" />
       <View style={styles.content}>
@@ -32,15 +32,15 @@ const LandingScreen = ({ navigation }) => {
 
         <View style={styles.featuresContainer}>
           <View style={styles.featureItem}>
-            <Ionicons name="map-outline" size={32} color="#FF6B6B" />
+            <Ionicons name="map-outline" size={32} color="#fff" />
             <Text style={styles.featureText}>Explore Historical Sites</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="water-outline" size={32} color="#FF6B6B" />
+            <Ionicons name="water-outline" size={32} color="#fff" />
             <Text style={styles.featureText}>Beautiful Beaches</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="restaurant-outline" size={32} color="#FF6B6B" />
+            <Ionicons name="restaurant-outline" size={32} color="#fff" />
             <Text style={styles.featureText}>Local Cuisine</Text>
           </View>
         </View>
@@ -51,7 +51,7 @@ const LandingScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('Login')}
           >
             <LinearGradient
-              colors={['#FF6B6B', '#FF8E8E']}
+              colors={['#fff', '#f0f0f0']}
               style={styles.buttonGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
+    color: '#A855F7',
     fontSize: 18,
     fontWeight: 'bold',
   },

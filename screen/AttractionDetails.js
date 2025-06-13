@@ -10,6 +10,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import RatingModal from '../components/RatingModal';
 
 const { height } = Dimensions.get('window');
@@ -44,90 +45,97 @@ const AttractionDetails = ({ route, navigation }) => {
 
   return (
     <>
-      <ScrollView style={styles.container}>
-        <View style={styles.imageContainer}>
-          <Image source={attraction.image} style={styles.image} />
-          <TouchableOpacity
-            style={styles.favoriteButton}
-            onPress={() => setIsFavorite(!isFavorite)}
-          >
-            <Ionicons
-              name={isFavorite ? 'heart' : 'heart-outline'}
-              size={24}
-              color={isFavorite ? '#FF6B6B' : '#fff'}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.detailsContainer}>
-          <Text style={styles.name}>{attraction.name}</Text>
-          <View style={styles.locationContainer}>
-            <Ionicons name="location-outline" size={20} color="#6c757d" />
-            <Text style={styles.location}>{attraction.location}</Text>
-          </View>
-
-          <View style={styles.ratingContainer}>
-            <View style={styles.ratingInfo}>
-              <Ionicons name="star" size={20} color="#ffd700" />
-              <Text style={styles.rating}>{attraction.rating}</Text>
-              <Text style={styles.reviews}>(200+ reviews)</Text>
-            </View>
+      <LinearGradient
+        colors={['#A855F7', '#9333EA']}
+        style={styles.container}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+      >
+        <ScrollView style={styles.scrollView}>
+          <View style={styles.imageContainer}>
+            <Image source={attraction.image} style={styles.image} />
             <TouchableOpacity
-              style={styles.rateButton}
-              onPress={() => setShowRatingModal(true)}
+              style={styles.favoriteButton}
+              onPress={() => setIsFavorite(!isFavorite)}
             >
-              <Text style={styles.rateButtonText}>Rate this place</Text>
+              <Ionicons
+                name={isFavorite ? 'heart' : 'heart-outline'}
+                size={24}
+                color={isFavorite ? '#A855F7' : '#fff'}
+              />
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.description}>
-            {getAttractionDescription(attraction.name)}
-          </Text>
+          <View style={styles.detailsContainer}>
+            <Text style={styles.name}>{attraction.name}</Text>
+            <View style={styles.locationContainer}>
+              <Ionicons name="location-outline" size={20} color="rgba(255,255,255,0.8)" />
+              <Text style={styles.location}>{attraction.location}</Text>
+            </View>
 
-          <View style={styles.infoSection}>
-            <Text style={styles.sectionTitle}>Highlights</Text>
-            <View style={styles.highlightsList}>
-              <View style={styles.highlightItem}>
-                <Ionicons name="camera-outline" size={24} color="#495057" />
-                <Text style={styles.highlightText}>Perfect for photography</Text>
+            <View style={styles.ratingContainer}>
+              <View style={styles.ratingInfo}>
+                <Ionicons name="star" size={20} color="#A855F7" />
+                <Text style={styles.rating}>{attraction.rating}</Text>
+                <Text style={styles.reviews}>(200+ reviews)</Text>
               </View>
-              <View style={styles.highlightItem}>
-                <Ionicons name="time-outline" size={24} color="#495057" />
-                <Text style={styles.highlightText}>Best time: Early morning</Text>
-              </View>
-              <View style={styles.highlightItem}>
-                <Ionicons name="people-outline" size={24} color="#495057" />
-                <Text style={styles.highlightText}>Family-friendly</Text>
+              <TouchableOpacity
+                style={styles.rateButton}
+                onPress={() => setShowRatingModal(true)}
+              >
+                <Text style={styles.rateButtonText}>Rate this place</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.description}>
+              {getAttractionDescription(attraction.name)}
+            </Text>
+
+            <View style={styles.infoSection}>
+              <Text style={styles.sectionTitle}>Highlights</Text>
+              <View style={styles.highlightsList}>
+                <View style={styles.highlightItem}>
+                  <Ionicons name="camera-outline" size={24} color="rgba(255,255,255,0.8)" />
+                  <Text style={styles.highlightText}>Perfect for photography</Text>
+                </View>
+                <View style={styles.highlightItem}>
+                  <Ionicons name="time-outline" size={24} color="rgba(255,255,255,0.8)" />
+                  <Text style={styles.highlightText}>Best time: Early morning</Text>
+                </View>
+                <View style={styles.highlightItem}>
+                  <Ionicons name="people-outline" size={24} color="rgba(255,255,255,0.8)" />
+                  <Text style={styles.highlightText}>Family-friendly</Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          {userRating && (
-            <View style={styles.userRatingContainer}>
-              <Text style={styles.userRatingTitle}>Your Rating</Text>
-              <View style={styles.userRatingStars}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Ionicons
-                    key={star}
-                    name="star"
-                    size={20}
-                    color={star <= userRating ? '#FFD700' : '#ccc'}
-                  />
-                ))}
+            {userRating && (
+              <View style={styles.userRatingContainer}>
+                <Text style={styles.userRatingTitle}>Your Rating</Text>
+                <View style={styles.userRatingStars}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Ionicons
+                      key={star}
+                      name="star"
+                      size={20}
+                      color={star <= userRating ? '#A855F7' : 'rgba(255,255,255,0.3)'}
+                    />
+                  ))}
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
-          <View style={styles.promotionalMessage}>
-            <Text style={styles.promotionalText}>
-              Visit this amazing destination and create unforgettable memories in Cebu!
-            </Text>
-            <Text style={styles.promotionalSubtext}>
-              Contact local tourism offices for visiting information.
-            </Text>
+            <View style={styles.promotionalMessage}>
+              <Text style={styles.promotionalText}>
+                Visit this amazing destination and create unforgettable memories in Cebu!
+              </Text>
+              <Text style={styles.promotionalSubtext}>
+                Contact local tourism offices for visiting information.
+              </Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </LinearGradient>
 
       <RatingModal
         visible={showRatingModal}
@@ -142,7 +150,10 @@ const AttractionDetails = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'transparent',
   },
   imageContainer: {
     position: 'relative',
@@ -155,7 +166,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     right: 20,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 10,
     borderRadius: 20,
   },
@@ -165,7 +176,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#343a40',
+    color: '#fff',
   },
   locationContainer: {
     flexDirection: 'row',
@@ -174,7 +185,7 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 16,
-    color: '#6c757d',
+    color: 'rgba(255,255,255,0.8)',
     marginLeft: 5,
   },
   ratingContainer: {
@@ -189,16 +200,17 @@ const styles = StyleSheet.create({
   },
   rating: {
     fontSize: 16,
-    color: '#ffd700',
+    color: '#A855F7',
     marginLeft: 5,
     marginRight: 10,
+    fontWeight: '600',
   },
   reviews: {
     fontSize: 14,
-    color: '#6c757d',
+    color: 'rgba(255,255,255,0.8)',
   },
   rateButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#A855F7',
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 20,
@@ -210,7 +222,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    color: '#495057',
+    color: 'rgba(255,255,255,0.8)',
     lineHeight: 24,
     marginTop: 20,
   },
@@ -220,11 +232,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#343a40',
+    color: '#fff',
     marginBottom: 15,
   },
   highlightsList: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 15,
     padding: 15,
   },
@@ -235,12 +247,12 @@ const styles = StyleSheet.create({
   },
   highlightText: {
     fontSize: 16,
-    color: '#495057',
+    color: 'rgba(255,255,255,0.8)',
     marginLeft: 10,
   },
   userRatingContainer: {
     marginTop: 30,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 15,
     padding: 15,
     alignItems: 'center',
@@ -248,7 +260,7 @@ const styles = StyleSheet.create({
   userRatingTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#343a40',
+    color: '#fff',
     marginBottom: 10,
   },
   userRatingStars: {
@@ -258,19 +270,19 @@ const styles = StyleSheet.create({
   promotionalMessage: {
     marginTop: 30,
     padding: 20,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     borderRadius: 15,
     alignItems: 'center',
   },
   promotionalText: {
     fontSize: 18,
-    color: '#343a40',
+    color: '#fff',
     textAlign: 'center',
     fontWeight: 'bold',
   },
   promotionalSubtext: {
     fontSize: 14,
-    color: '#6c757d',
+    color: 'rgba(255,255,255,0.8)',
     textAlign: 'center',
     marginTop: 10,
   },

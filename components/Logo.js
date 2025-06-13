@@ -11,7 +11,7 @@ const Logo = ({ size = 'normal' }) => {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <Ionicons name="airplane" size={iconSize} color="#FF6B6B" />
+        <Ionicons name="airplane" size={iconSize} color="#A855F7" />
         <Ionicons name="map" size={mapIconSize} color="#fff" style={styles.mapIcon} />
       </View>
       <Text style={[styles.title, { fontSize: titleSize }]}>CebuXplore</Text>
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   subtitle: {
-    color: '#FF6B6B',
+    color: '#A855F7',
     letterSpacing: 2,
     marginTop: 5,
   },

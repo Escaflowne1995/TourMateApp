@@ -149,10 +149,10 @@ const SearchScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+      end={{ x: 0, y: 1 }}
     >
       <View style={styles.searchContainer}>
         <Ionicons name="search-outline" size={20} color="rgba(255, 255, 255, 0.7)" />
@@ -193,17 +193,10 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     margin: 15,
-    padding: 10,
-    borderRadius: 10,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    padding: 15,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   searchInput: {
     flex: 1,
@@ -219,21 +212,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginHorizontal: 5,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   selectedCategory: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#A855F7',
   },
   categoryText: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
   },
   selectedCategoryText: {
     color: '#fff',
@@ -243,22 +229,14 @@ const styles = StyleSheet.create({
   },
   attractionCard: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 15,
     marginBottom: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
   },
   attractionImage: {
     width: 120,
     height: 120,
-    borderTopLeftRadius: 15,
-    borderBottomLeftRadius: 15,
   },
   attractionInfo: {
     flex: 1,
@@ -276,7 +254,7 @@ const styles = StyleSheet.create({
   },
   attractionLocation: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginLeft: 5,
   },
   ratingPrice: {
@@ -285,8 +263,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   rating: {
-    color: '#ffd700',
+    color: '#A855F7',
     fontSize: 14,
+    fontWeight: '600',
   },
 });
 

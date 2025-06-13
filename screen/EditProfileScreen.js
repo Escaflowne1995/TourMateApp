@@ -12,6 +12,11 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
+import { auth, db, storage } from '../components/firebaseConfig';
+import { doc, updateDoc, setDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { updateProfile } from 'firebase/auth';
 
 const EditProfileScreen = ({ navigation, route }) => {
   const userData = route.params?.userData || {};
@@ -25,11 +30,36 @@ const EditProfileScreen = ({ navigation, route }) => {
     avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400'
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!auth.currentUser) {
+      Alert.alert('Error', 'You must be logged in to update your profile.');
+      return;
+    }
+
     setIsLoading(true);
     
-    // Mock save operation
-    setTimeout(() => {
+    try {
+      const user = auth.currentUser;
+      
+      // Update Firebase Auth profile
+      await updateProfile(user, {
+        displayName: profileData.name,
+        photoURL: profileData.avatar
+      });
+
+      // Update Firestore user document
+      const userDocRef = doc(db, 'users', user.uid);
+      await setDoc(userDocRef, {
+        fullName: profileData.name,
+        email: profileData.email,
+        phone: profileData.phone,
+        location: profileData.location,
+        bio: profileData.bio,
+        avatar: profileData.avatar,
+        updatedAt: new Date().toISOString(),
+        uid: user.uid
+      }, { merge: true }); // merge: true means update existing fields, don't overwrite the whole document
+
       Alert.alert(
         'Profile Updated',
         'Your profile has been successfully updated!',
@@ -42,8 +72,150 @@ const EditProfileScreen = ({ navigation, route }) => {
           }
         ]
       );
+    } catch (error) {
+      console.error('Profile save error:', error);
+      Alert.alert(
+        'Error', 
+        'Failed to update profile. Please try again.'
+      );
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  const uploadImageToFirebase = async (uri) => {
+    try {
+      // Check if user is authenticated
+      if (!auth.currentUser) {
+        throw new Error('User not authenticated');
+      }
+
+      console.log('Starting image upload for user:', auth.currentUser.uid);
+      
+      // Convert image to blob
+      const response = await fetch(uri);
+      if (!response.ok) {
+        throw new Error('Failed to fetch image');
+      }
+      
+      const blob = await response.blob();
+      console.log('Image blob created, size:', blob.size);
+      
+      // Create unique filename
+      const filename = `profile_pictures/${auth.currentUser.uid}_${Date.now()}.jpg`;
+      console.log('Upload path:', filename);
+      
+      const imageRef = ref(storage, filename);
+      
+      // Upload image with metadata
+      const metadata = {
+        contentType: 'image/jpeg',
+        customMetadata: {
+          uploadedBy: auth.currentUser.uid,
+          uploadedAt: new Date().toISOString()
+        }
+      };
+      
+      console.log('Starting upload...');
+      const uploadResult = await uploadBytes(imageRef, blob, metadata);
+      console.log('Upload successful:', uploadResult.metadata.name);
+      
+      // Get download URL
+      const downloadURL = await getDownloadURL(imageRef);
+      console.log('Download URL obtained:', downloadURL);
+      
+      return downloadURL;
+    } catch (error) {
+      console.error('Image upload error details:', {
+        code: error.code,
+        message: error.message,
+        serverResponse: error.serverResponse
+      });
+      
+      // Provide more specific error messages
+      if (error.code === 'storage/unauthorized') {
+        throw new Error('You are not authorized to upload images. Please log in again.');
+      } else if (error.code === 'storage/quota-exceeded') {
+        throw new Error('Storage quota exceeded. Please try again later.');
+      } else if (error.code === 'storage/unauthenticated') {
+        throw new Error('Please log in to upload images.');
+      } else if (error.code === 'storage/unknown') {
+        throw new Error('Upload failed due to server error. Please check your internet connection and try again.');
+      } else {
+        throw new Error(`Upload failed: ${error.message}`);
+      }
+    }
+  };
+
+  const pickImageFromGallery = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (permissionResult.granted === false) {
+        Alert.alert('Permission Required', 'Permission to access gallery is required!');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5, // Reduced quality to avoid size issues
+        base64: false,
+        exif: false,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setIsLoading(true);
+        try {
+          const downloadURL = await uploadImageToFirebase(result.assets[0].uri);
+          setProfileData({...profileData, avatar: downloadURL});
+          Alert.alert('Success', 'Profile picture updated!');
+        } catch (error) {
+          Alert.alert('Error', 'Failed to upload image. Please try again.');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error('Gallery error:', error);
+      Alert.alert('Error', 'Failed to open gallery.');
+    }
+  };
+
+  const pickImageFromCamera = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (permissionResult.granted === false) {
+        Alert.alert('Permission Required', 'Permission to access camera is required!');
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5, // Reduced quality to avoid size issues
+        base64: false,
+        exif: false,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setIsLoading(true);
+        try {
+          const downloadURL = await uploadImageToFirebase(result.assets[0].uri);
+          setProfileData({...profileData, avatar: downloadURL});
+          Alert.alert('Success', 'Profile picture updated!');
+        } catch (error) {
+          Alert.alert('Error', 'Failed to upload image. Please try again.');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to open camera.');
+    }
   };
 
   const handleChangeAvatar = () => {
@@ -51,8 +223,8 @@ const EditProfileScreen = ({ navigation, route }) => {
       'Change Profile Picture',
       'Choose an option',
       [
-        { text: 'Camera', onPress: () => console.log('Camera selected') },
-        { text: 'Gallery', onPress: () => console.log('Gallery selected') },
+        { text: 'Camera', onPress: pickImageFromCamera },
+        { text: 'Gallery', onPress: pickImageFromGallery },
         { text: 'Cancel', style: 'cancel' }
       ]
     );
@@ -60,8 +232,10 @@ const EditProfileScreen = ({ navigation, route }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
     >
       <ScrollView 
         style={styles.scrollView}
@@ -173,7 +347,7 @@ const EditProfileScreen = ({ navigation, route }) => {
           accessibilityState={{ disabled: isLoading }}
         >
           <LinearGradient
-            colors={['#FF6B6B', '#FF8E8E']}
+            colors={['#A855F7', '#9333EA']}
             style={styles.buttonGradient}
           >
             {isLoading ? (
@@ -198,17 +372,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
+    backgroundColor: 'transparent',
     flex: 1,
   },
   header: {
     alignItems: 'center',
-    paddingVertical: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    marginHorizontal: 15,
-    marginTop: 15,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    paddingTop: 40,
+    paddingBottom: 30,
   },
   avatarContainer: {
     position: 'relative',
@@ -218,27 +388,24 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 3,
-    borderColor: '#FF6B6B',
+    borderColor: '#fff',
   },
   cameraIcon: {
     position: 'absolute',
-    bottom: 5,
-    right: 5,
-    backgroundColor: '#FF6B6B',
-    borderRadius: 15,
-    width: 30,
-    height: 30,
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#A855F7',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#fff',
   },
   form: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    marginTop: 10,
-    marginHorizontal: 15,
-    padding: 20,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   inputGroup: {
     marginBottom: 20,
@@ -247,20 +414,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#fff',
-    marginBottom: 8,
+    marginBottom: 10,
+    marginLeft: 5,
   },
   input: {
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 10,
-    padding: 15,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
     fontSize: 16,
     color: '#fff',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     minHeight: 50,
   },
   textArea: {
-    minHeight: 100,
+    height: 120,
+    textAlignVertical: 'top',
     paddingTop: 15,
   },
   saveButton: {
@@ -274,7 +442,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   buttonGradient: {
-    paddingVertical: 15,
+    padding: 18,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 56,

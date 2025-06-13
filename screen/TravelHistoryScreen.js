@@ -26,7 +26,7 @@ const mockTravelHistory = [
   {
     id: '2',
     tripName: 'Beach and Nature Adventure',
-    date: '2024-01-08',
+    date: '2024-01-08', 
     duration: '3 Days',
     places: [
       { name: 'Kawasan Falls', image: require('../assets/images/kawasan-falls.jpg') },
@@ -180,8 +180,10 @@ const TravelHistoryScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
     >
       <View 
         style={styles.content}
@@ -227,15 +229,14 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   header: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 10,
+    marginTop: 15,
     borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
@@ -244,7 +245,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
   },
   list: {
@@ -257,27 +258,115 @@ const styles = StyleSheet.create({
     padding: 40,
   },
   tripCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 15,
     marginBottom: 15,
-    padding: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover',
+  },
+  cardContent: {
+    padding: 15,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  tripInfo: {
+    flex: 1,
+  },
+  placeName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 5,
+  },
+  location: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
+    marginLeft: 4,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  visitDate: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.8)',
+  },
+  statusBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+    backgroundColor: '#A855F7',
+  },
+  statusText: {
+    fontSize: 12,
+    color: '#fff',
+    fontWeight: '600',
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rating: {
+    fontSize: 16,
+    color: '#A855F7',
+    marginLeft: 4,
+    fontWeight: '600',
+  },
+  duration: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  emptySubtitle: {
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.8)',
+    textAlign: 'center',
+    marginBottom: 30,
+    lineHeight: 24,
+  },
+  startTravelButton: {
+    backgroundColor: '#A855F7',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 25,
+    minHeight: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  startTravelButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   tripHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 15,
-  },
-  tripInfo: {
-    flex: 1,
-    marginRight: 15,
   },
   tripName: {
     fontSize: 18,
@@ -300,23 +389,10 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.7)',
     marginLeft: 5,
   },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-    minHeight: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  statusText: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: '600',
-  },
   placesPreview: {
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
     paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 215, 0, 0.2)',
   },
   placesTitle: {
     fontSize: 16,
@@ -336,7 +412,7 @@ const styles = StyleSheet.create({
     borderColor: '#fff',
   },
   moreImages: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#A855F7',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -345,26 +421,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
-    textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 24,
-  },
   exploreButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#A855F7',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,

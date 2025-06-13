@@ -60,7 +60,7 @@ const LanguageScreen = ({ navigation }) => {
       accessibilityState={{ selected: selectedLanguage === item.code }}
     >
       <View style={styles.languageContent}>
-        <View style={styles.languageText}>
+        <View style={styles.languageInfo}>
           <Text style={[
             styles.languageName,
             selectedLanguage === item.code && styles.selectedLanguageName
@@ -78,8 +78,9 @@ const LanguageScreen = ({ navigation }) => {
           <Ionicons 
             name="checkmark-circle" 
             size={24} 
-            color="#FF6B6B"
+            color="#A855F7"
             accessible={false}
+            style={styles.checkIcon}
           />
         )}
       </View>
@@ -88,8 +89,10 @@ const LanguageScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
     >
       <View 
         style={styles.content}
@@ -117,7 +120,7 @@ const LanguageScreen = ({ navigation }) => {
           data={languages}
           renderItem={renderLanguageItem}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={styles.languageContainer}
           showsVerticalScrollIndicator={false}
           accessible={false}
           accessibilityLabel="List of available languages"
@@ -143,15 +146,14 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   header: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 10,
+    marginTop: 15,
     borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
@@ -160,69 +162,70 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
   },
-  list: {
-    padding: 15,
+  languageContainer: {
+    marginTop: 20,
+    marginHorizontal: 15,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   languageItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 15,
-    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    minHeight: 60,
+    minHeight: 70,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   selectedLanguageItem: {
-    backgroundColor: 'rgba(255, 107, 107, 0.2)',
-    borderColor: '#FF6B6B',
+          backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    borderColor: '#A855F7',
     borderWidth: 2,
   },
   languageContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  languageText: {
     flex: 1,
   },
+  languageInfo: {
+    flex: 1,
+    marginLeft: 15,
+  },
   languageName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#fff',
     marginBottom: 4,
   },
   selectedLanguageName: {
-    color: '#FF6B6B',
+    color: '#A855F7',
   },
   languageNative: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
   },
   selectedLanguageNative: {
-    color: 'rgba(255, 107, 107, 0.9)',
+    color: 'rgba(168, 85, 247, 0.9)',
   },
   footer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 20,
     marginHorizontal: 15,
     marginBottom: 20,
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(255, 215, 0, 0.3)',
   },
   footerText: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  checkIcon: {
+    marginLeft: 10,
   },
 });
 

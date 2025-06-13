@@ -108,7 +108,7 @@ const HelpSupportScreen = ({ navigation }) => {
         <Ionicons 
           name={option.icon} 
           size={24} 
-          color="#FF6B6B" 
+                          color="#A855F7" 
           style={styles.contactIcon}
           accessible={false}
         />
@@ -160,8 +160,10 @@ const HelpSupportScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
     >
       <ScrollView 
         style={styles.scrollView}
@@ -255,15 +257,14 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   header: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 20,
     marginHorizontal: 15,
     marginTop: 10,
     borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
@@ -272,7 +273,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
   },
   section: {
@@ -287,18 +288,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   contactContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 15,
     padding: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   contactItem: {
     paddingVertical: 15,
     paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
     minHeight: 70,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   contactContent: {
     flexDirection: 'row',
@@ -318,20 +317,18 @@ const styles = StyleSheet.create({
   },
   contactSubtitle: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
   },
   faqContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 15,
     padding: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   faqItem: {
     paddingVertical: 15,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   faqHeader: {
     flexDirection: 'row',
@@ -347,16 +344,14 @@ const styles = StyleSheet.create({
   },
   faqAnswer: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 10,
     lineHeight: 20,
   },
   appInfoContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 15,
     padding: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   infoRow: {
     flexDirection: 'row',
@@ -364,7 +359,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   infoLabel: {
     fontSize: 16,
@@ -373,21 +368,19 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: 'rgba(255,255,255,0.8)',
   },
   footer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 20,
     marginHorizontal: 15,
     marginTop: 20,
     marginBottom: 30,
     borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   footerText: {
     fontSize: 16,
-    color: '#FF6B6B',
+    color: '#A855F7',
     textAlign: 'center',
     fontWeight: '600',
   },

@@ -71,7 +71,7 @@ const FavoriteSpotsScreen = ({ navigation }) => {
               <Ionicons 
                 name="location-outline" 
                 size={16} 
-                color="#6c757d"
+                color="rgba(255,255,255,0.8)"
                 accessible={false}
               />
               <Text style={styles.location}>{item.location}</Text>
@@ -88,7 +88,7 @@ const FavoriteSpotsScreen = ({ navigation }) => {
             <Ionicons 
               name="heart" 
               size={24} 
-              color="#FF6B6B"
+              color="#A855F7"
               accessible={false}
             />
           </TouchableOpacity>
@@ -99,7 +99,7 @@ const FavoriteSpotsScreen = ({ navigation }) => {
             <Ionicons 
               name="star" 
               size={16} 
-              color="#ffd700"
+              color="#A855F7"
               accessible={false}
             />
             <Text style={styles.rating}>{item.rating}</Text>
@@ -147,8 +147,10 @@ const FavoriteSpotsScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+      colors={['#A855F7', '#9333EA']}
       style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
     >
       <View 
         style={styles.content}
@@ -194,15 +196,14 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   header: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 20,
     marginHorizontal: 15,
     marginTop: 15,
     borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   headerTitle: {
     fontSize: 24,
@@ -211,7 +212,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginTop: 5,
   },
   list: {
@@ -224,17 +225,10 @@ const styles = StyleSheet.create({
     padding: 40,
   },
   favoriteCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderRadius: 15,
     marginBottom: 15,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   image: {
     width: '100%',
@@ -266,7 +260,7 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     marginLeft: 4,
   },
   removeButton: {
@@ -287,15 +281,14 @@ const styles = StyleSheet.create({
   },
   rating: {
     fontSize: 16,
-    color: '#ffd700',
+    color: '#A855F7',
     marginLeft: 4,
     fontWeight: '600',
   },
   category: {
     fontSize: 14,
-    color: '#ffd700',
+    color: '#A855F7',
     fontWeight: '600',
-    backgroundColor: 'rgba(255, 215, 0, 0.1)',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -313,13 +306,13 @@ const styles = StyleSheet.create({
   },
   emptySubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255,255,255,0.8)',
     textAlign: 'center',
     marginBottom: 30,
     lineHeight: 24,
   },
   exploreButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#A855F7',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
