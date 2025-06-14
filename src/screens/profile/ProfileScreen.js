@@ -16,6 +16,8 @@ import { auth } from '../../services/firebase/firebaseConfig';
 import UserService from '../../services/user/UserService';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeColors } from '../../utils/theme';
+import favoritesService from '../../services/api/favoritesService';
+import reviewsService from '../../services/api/reviewsService';
 
 const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
   const { isDarkMode } = useTheme();
@@ -25,6 +27,97 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentUserData, setCurrentUserData] = useState(userDataProp || route.params?.userData || {});
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [reviewsCount, setReviewsCount] = useState(0);
+
+  // Load favorites and reviews counts
+  const loadCounts = async () => {
+    try {
+      console.log('ProfileScreen: Loading counts...');
+      
+      const [favCount, revCount] = await Promise.all([
+        favoritesService.getFavoritesCount(),
+        reviewsService.getReviewsCount()
+      ]);
+      
+      console.log(`ProfileScreen: Loaded counts - Favorites: ${favCount}, Reviews: ${revCount}`);
+      
+      setFavoritesCount(favCount || 0);
+      setReviewsCount(revCount || 0);
+    } catch (error) {
+      console.error('ProfileScreen: Error loading counts:', error);
+      // Set defaults if there's an error
+      setFavoritesCount(0);
+      setReviewsCount(0);
+    }
+  };
+
+  // Test function to add sample data - for testing purposes
+  const addSampleData = async () => {
+    try {
+      // Add sample favorites
+      const sampleAttractions = [
+        {
+          id: 'sample1',
+          name: 'Temple of Leah',
+          location: 'Busay, Cebu City',
+          image: { uri: 'https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=300' },
+          rating: 4.5,
+          category: 'Historical'
+        },
+        {
+          id: 'sample2', 
+          name: 'Yap-Sandiego Ancestral House',
+          location: 'Parian, Cebu City',
+          image: { uri: 'https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=300' },
+          rating: 4.2,
+          category: 'Heritage'
+        }
+      ];
+
+      // Add to favorites
+      for (const attraction of sampleAttractions) {
+        await favoritesService.addToFavorites(attraction);
+      }
+
+      // Add sample reviews
+      await reviewsService.addReview(sampleAttractions[0], 5, 'Amazing temple with great views!');
+      await reviewsService.addReview(sampleAttractions[1], 4, 'Beautiful historic house, well preserved.');
+
+      // Reload counts
+      await loadCounts();
+      Alert.alert('Success', 'Sample data added! Check your favorites and reviews.');
+    } catch (error) {
+      console.error('Error adding sample data:', error);
+      Alert.alert('Error', 'Failed to add sample data');
+    }
+  };
+
+  // Test function to clear all data - for testing purposes
+  const clearAllData = async () => {
+    Alert.alert(
+      'Clear All Data',
+      'This will remove all favorites and reviews. Are you sure?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear All',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await favoritesService.clearFavorites();
+              await reviewsService.clearReviews();
+              await loadCounts();
+              Alert.alert('Success', 'All data cleared!');
+            } catch (error) {
+              console.error('Error clearing data:', error);
+              Alert.alert('Error', 'Failed to clear data');
+            }
+          }
+        }
+      ]
+    );
+  };
 
   // Refresh user data when screen focuses or user changes
   useEffect(() => {
@@ -43,13 +136,19 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
           setIsRefreshing(false);
         }
       }
+      // Load counts after user data
+      await loadCounts();
     };
 
     // Refresh data when screen loads
     refreshUserData();
 
     // Set up navigation focus listener to refresh when returning to screen
-    const unsubscribe = navigation.addListener('focus', refreshUserData);
+    const unsubscribe = navigation.addListener('focus', () => {
+      console.log('ProfileScreen: Screen focused, refreshing data...');
+      refreshUserData();
+    });
+    
     return unsubscribe;
   }, [navigation]);
 
@@ -57,8 +156,8 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
     name: currentUserData.fullName || currentUserData.displayName || currentUserData.name || 'Guest User',
     email: currentUserData.email || 'guest@example.com',
     avatar: currentUserData.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
-    favoriteSpots: 0,
-    reviews: 0,
+    favoriteSpots: favoritesCount,
+    reviews: reviewsCount,
     language: 'English',
     currency: 'PHP',
   };
@@ -120,6 +219,22 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
       action: () => navigation.navigate('HelpSupport'),
       accessibilityLabel: 'Help & Support',
       accessibilityHint: 'Get help and contact support',
+    },
+    {
+      id: '10',
+      title: 'Add Sample Data (Testing)',
+      icon: 'add-circle-outline',
+      action: addSampleData,
+      accessibilityLabel: 'Add Sample Data',
+      accessibilityHint: 'Add sample favorites and reviews for testing',
+    },
+    {
+      id: '11',
+      title: 'Clear All Data (Testing)',
+      icon: 'trash-outline',
+      action: clearAllData,
+      accessibilityLabel: 'Clear All Data',
+      accessibilityHint: 'Clear all favorites and reviews data for testing',
     },
   ];
 
@@ -217,28 +332,38 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
             accessibilityRole="summary"
             accessibilityLabel={`Your statistics: ${userProfile.favoriteSpots} favorite spots, ${userProfile.reviews} reviews`}
           >
-          <View style={styles.statItem}>
+          <TouchableOpacity 
+            style={styles.statItem}
+            onPress={() => navigation.navigate('FavoriteSpots')}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`${userProfile.favoriteSpots} favorite spots - tap to view`}
+          >
             <Text 
               style={styles.statNumber}
               accessible={true}
               accessibilityRole="text"
-              accessibilityLabel={`${userProfile.favoriteSpots} favorite spots`}
             >
               {userProfile.favoriteSpots}
             </Text>
             <Text style={styles.statLabel}>Favorite Spots</Text>
-          </View>
-          <View style={styles.statItem}>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.statItem}
+            onPress={() => navigation.navigate('MyReviews')}
+            accessible={true}  
+            accessibilityRole="button"
+            accessibilityLabel={`${userProfile.reviews} reviews - tap to view`}
+          >
             <Text 
               style={styles.statNumber}
               accessible={true}
               accessibilityRole="text"
-              accessibilityLabel={`${userProfile.reviews} reviews`}
             >
               {userProfile.reviews}
             </Text>
             <Text style={styles.statLabel}>Reviews</Text>
-          </View>
+          </TouchableOpacity>
         </View>
 
         <View 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import RatingModal from '../../components/modals/RatingModal';
+import favoritesService from '../../services/api/favoritesService';
+import reviewsService from '../../services/api/reviewsService';
 
 const { height } = Dimensions.get('window');
 
@@ -20,6 +22,39 @@ const AttractionDetails = ({ route, navigation }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [userRating, setUserRating] = useState(null);
+  const [userReview, setUserReview] = useState(null);
+  const [reviewsCount, setReviewsCount] = useState(0);
+  const [averageRating, setAverageRating] = useState(attraction.rating || 0);
+
+  useEffect(() => {
+    loadAttractionData();
+  }, [attraction.id]);
+
+  const loadAttractionData = async () => {
+    try {
+      // Check if attraction is favorite
+      const favorite = await favoritesService.isFavorite(attraction.id);
+      setIsFavorite(favorite);
+
+      // Load user's review for this attraction
+      const review = await reviewsService.getUserReviewForAttraction(attraction.id);
+      if (review) {
+        setUserRating(review.rating);
+        setUserReview(review);
+      }
+
+      // Load reviews count and average rating
+      const attractionReviews = await reviewsService.getReviewsForAttraction(attraction.id);
+      setReviewsCount(attractionReviews.length);
+      
+      const avgRating = await reviewsService.getAverageRating(attraction.id);
+      if (avgRating > 0) {
+        setAverageRating(parseFloat(avgRating));
+      }
+    } catch (error) {
+      console.error('Error loading attraction data:', error);
+    }
+  };
 
   const getAttractionDescription = (name) => {
     const descriptions = {
@@ -33,14 +68,47 @@ const AttractionDetails = ({ route, navigation }) => {
     return descriptions[name] || 'Description not available.';
   };
 
-  const handleRatingSubmit = ({ rating, review }) => {
-    // Here you would typically send the rating to your backend
-    setUserRating(rating);
-    Alert.alert(
-      'Thank You!',
-      'Your rating has been submitted successfully.',
-      [{ text: 'OK' }]
-    );
+  const handleFavoriteToggle = async () => {
+    try {
+      if (isFavorite) {
+        // Remove from favorites
+        const success = await favoritesService.removeFromFavorites(attraction.id);
+        if (success) {
+          setIsFavorite(false);
+          Alert.alert('Removed', 'Removed from your favorites');
+        }
+      } else {
+        // Add to favorites
+        const success = await favoritesService.addToFavorites(attraction);
+        if (success) {
+          setIsFavorite(true);
+          Alert.alert('Added', 'Added to your favorites!');
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      Alert.alert('Error', 'Failed to update favorites');
+    }
+  };
+
+  const handleRatingSubmit = async ({ rating, review }) => {
+    try {
+      const newReview = await reviewsService.addReview(attraction, rating, review);
+      setUserRating(rating);
+      setUserReview(newReview);
+      
+      // Reload reviews data
+      await loadAttractionData();
+      
+      Alert.alert(
+        'Thank You!',
+        'Your rating has been submitted successfully.',
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      Alert.alert('Error', 'Failed to submit rating');
+    }
   };
 
   return (
@@ -56,7 +124,7 @@ const AttractionDetails = ({ route, navigation }) => {
             <Image source={attraction.image} style={styles.image} />
             <TouchableOpacity
               style={styles.favoriteButton}
-              onPress={() => setIsFavorite(!isFavorite)}
+              onPress={handleFavoriteToggle}
             >
               <Ionicons
                 name={isFavorite ? 'heart' : 'heart-outline'}
@@ -76,14 +144,16 @@ const AttractionDetails = ({ route, navigation }) => {
             <View style={styles.ratingContainer}>
               <View style={styles.ratingInfo}>
                 <Ionicons name="star" size={20} color="#A855F7" />
-                <Text style={styles.rating}>{attraction.rating}</Text>
-                <Text style={styles.reviews}>(200+ reviews)</Text>
+                <Text style={styles.rating}>{averageRating}</Text>
+                <Text style={styles.reviews}>({reviewsCount} reviews)</Text>
               </View>
               <TouchableOpacity
                 style={styles.rateButton}
                 onPress={() => setShowRatingModal(true)}
               >
-                <Text style={styles.rateButtonText}>Rate this place</Text>
+                <Text style={styles.rateButtonText}>
+                  {userReview ? 'Update Rating' : 'Rate this place'}
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -142,6 +212,7 @@ const AttractionDetails = ({ route, navigation }) => {
         onClose={() => setShowRatingModal(false)}
         onSubmit={handleRatingSubmit}
         attractionName={attraction.name}
+        existingReview={userReview}
       />
     </>
   );

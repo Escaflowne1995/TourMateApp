@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,49 +11,46 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeColors } from '../../utils/theme';
-
-const mockReviews = [
-  {
-    id: '1',
-    spotName: 'Basilica del Santo Niño',
-    location: 'Cebu City',
-    image: require('../../../assets/images/basilica.jpg'),
-    rating: 5,
-    review: 'Amazing historical site! The architecture is breathtaking and the spiritual atmosphere is truly moving. A must-visit when in Cebu.',
-    date: '2024-01-15',
-    likes: 12,
-    helpful: 8,
-  },
-  {
-    id: '2',
-    spotName: 'Temple of Leah',
-    location: 'Cebu City',
-    image: require('../../../assets/images/temple-of-leah.jpg'),
-    rating: 4,
-    review: 'Beautiful temple with stunning city views. The Roman-inspired architecture is impressive. Great for photos and romantic dates.',
-    date: '2024-01-10',
-    likes: 8,
-    helpful: 5,
-  },
-  {
-    id: '3',
-    spotName: 'Kawasan Falls',
-    location: 'Badian, Cebu',
-    image: require('../../../assets/images/kawasan-falls.jpg'),
-    rating: 5,
-    review: 'Absolutely spectacular! The turquoise water is crystal clear and perfect for swimming. The canyoneering experience was thrilling!',
-    date: '2024-01-05',
-    likes: 25,
-    helpful: 18,
-  },
-];
+import reviewsService from '../../services/api/reviewsService';
 
 const MyReviewsScreen = ({ navigation }) => {
   const { isDarkMode } = useTheme();
   const colors = getThemeColors(isDarkMode);
   const styles = getStyles(colors, isDarkMode);
   
-  const [reviews, setReviews] = useState(mockReviews);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadReviews();
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Reload reviews when screen comes into focus
+      loadReviews();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const loadReviews = async () => {
+    try {
+      setLoading(true);
+      const reviewsList = await reviewsService.getReviews();
+      console.log(`MyReviewsScreen: Loaded ${reviewsList.length} reviews`);
+      setReviews(reviewsList);
+    } catch (error) {
+      console.error('MyReviewsScreen: Error loading reviews:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
   const deleteReview = (id, spotName) => {
     Alert.alert(
@@ -64,8 +61,16 @@ const MyReviewsScreen = ({ navigation }) => {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => {
-            setReviews(reviews.filter(item => item.id !== id));
+          onPress: async () => {
+            try {
+              const success = await reviewsService.deleteReview(id);
+              if (success) {
+                setReviews(reviews.filter(item => item.id !== id));
+              }
+            } catch (error) {
+              console.error('Error deleting review:', error);
+              Alert.alert('Error', 'Failed to delete review');
+            }
           }
         }
       ]
@@ -112,7 +117,7 @@ const MyReviewsScreen = ({ navigation }) => {
             />
             <Text style={styles.location}>{item.location}</Text>
           </View>
-          <Text style={styles.reviewDate}>{new Date(item.date).toLocaleDateString()}</Text>
+          <Text style={styles.reviewDate}>{formatDate(item.date)}</Text>
         </View>
       </TouchableOpacity>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,50 +6,75 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeColors } from '../../utils/theme';
-
-const mockFavorites = [
-  {
-    id: '1',
-    name: 'Basilica del Santo Niño',
-    location: 'Cebu City',
-    image: require('../../../assets/images/basilica.jpg'),
-    rating: 4.8,
-    category: 'Historical',
-    dateAdded: '2024-01-15',
-  },
-  {
-    id: '2',
-    name: 'Temple of Leah',
-    location: 'Cebu City',
-    image: require('../../../assets/images/temple-of-leah.jpg'),
-    rating: 4.6,
-    category: 'Cultural',
-    dateAdded: '2024-01-10',
-  },
-  {
-    id: '3',
-    name: 'Kawasan Falls',
-    location: 'Badian, Cebu',
-    image: require('../../../assets/images/kawasan-falls.jpg'),
-    rating: 4.9,
-    category: 'Nature',
-    dateAdded: '2024-01-05',
-  },
-];
+import favoritesService from '../../services/api/favoritesService';
 
 const FavoriteSpotsScreen = ({ navigation }) => {
   const { isDarkMode } = useTheme();
   const colors = getThemeColors(isDarkMode);
   const styles = getStyles(colors, isDarkMode);
   
-  const [favorites, setFavorites] = useState(mockFavorites);
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const removeFavorite = (id) => {
-    setFavorites(favorites.filter(item => item.id !== id));
+  useEffect(() => {
+    loadFavorites();
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Reload favorites when screen comes into focus
+      loadFavorites();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const loadFavorites = async () => {
+    try {
+      setLoading(true);
+      const favoritesList = await favoritesService.getFavorites();
+      console.log(`FavoriteSpotsScreen: Loaded ${favoritesList.length} favorites`);
+      setFavorites(favoritesList);
+    } catch (error) {
+      console.error('FavoriteSpotsScreen: Error loading favorites:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const removeFavorite = async (id, name) => {
+    Alert.alert(
+      'Remove from Favorites',
+      `Are you sure you want to remove ${name} from your favorites?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const success = await favoritesService.removeFromFavorites(id);
+              if (success) {
+                setFavorites(favorites.filter(item => item.id !== id));
+              }
+            } catch (error) {
+              console.error('Error removing favorite:', error);
+              Alert.alert('Error', 'Failed to remove from favorites');
+            }
+          }
+        }
+      ]
+    );
   };
 
   const renderFavoriteItem = ({ item }) => (
@@ -84,7 +109,7 @@ const FavoriteSpotsScreen = ({ navigation }) => {
           </View>
           <TouchableOpacity
             style={styles.removeButton}
-            onPress={() => removeFavorite(item.id)}
+            onPress={() => removeFavorite(item.id, item.name)}
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel="Remove from favorites"

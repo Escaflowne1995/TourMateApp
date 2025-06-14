@@ -10,9 +10,20 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const RatingModal = ({ visible, onClose, onSubmit, attractionName }) => {
-  const [rating, setRating] = useState(0);
-  const [review, setReview] = useState('');
+const RatingModal = ({ visible, onClose, onSubmit, attractionName, existingReview = null }) => {
+  const [rating, setRating] = useState(existingReview?.rating || 0);
+  const [review, setReview] = useState(existingReview?.review || '');
+
+  // Update state when existingReview changes
+  React.useEffect(() => {
+    if (existingReview) {
+      setRating(existingReview.rating);
+      setReview(existingReview.review || '');
+    } else {
+      setRating(0);
+      setReview('');
+    }
+  }, [existingReview, visible]);
 
   const handleSubmit = () => {
     if (rating === 0) {
