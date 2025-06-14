@@ -10,17 +10,18 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import Logo from '../../components/common/Logo';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const { width, height } = Dimensions.get('window');
 
 const LandingScreen = ({ navigation }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar translucent backgroundColor="transparent" />
       <View style={styles.content}>
         <View style={styles.header}>
@@ -32,15 +33,15 @@ const LandingScreen = ({ navigation }) => {
 
         <View style={styles.featuresContainer}>
           <View style={styles.featureItem}>
-            <Ionicons name="map-outline" size={32} color="#fff" />
+            <Ionicons name="map-outline" size={32} color={colors.primary} />
             <Text style={styles.featureText}>Explore Historical Sites</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="water-outline" size={32} color="#fff" />
+            <Ionicons name="water-outline" size={32} color={colors.primary} />
             <Text style={styles.featureText}>Beautiful Beaches</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="restaurant-outline" size={32} color="#fff" />
+            <Ionicons name="restaurant-outline" size={32} color={colors.primary} />
             <Text style={styles.featureText}>Local Cuisine</Text>
           </View>
         </View>
@@ -50,14 +51,9 @@ const LandingScreen = ({ navigation }) => {
             style={styles.button}
             onPress={() => navigation.navigate('Login')}
           >
-            <LinearGradient
-              colors={['#fff', '#f0f0f0']}
-              style={styles.buttonGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
+            <View style={styles.buttonGradient}>
               <Text style={styles.buttonText}>Get Started</Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -67,11 +63,11 @@ const LandingScreen = ({ navigation }) => {
           </Text>
         </View>
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
     width: width,
@@ -86,10 +82,14 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     paddingHorizontal: 20,
+    backgroundColor: isDarkMode ? colors.cardBackground : 'transparent',
+    borderRadius: isDarkMode ? 15 : 0,
+    marginHorizontal: isDarkMode ? 15 : 0,
+    padding: isDarkMode ? 20 : 20,
   },
   subtitle: {
     fontSize: 18,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 20,
   },
@@ -99,15 +99,20 @@ const styles = StyleSheet.create({
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
     borderRadius: 15,
     padding: 20,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   featureText: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 18,
     marginLeft: 15,
   },
@@ -123,13 +128,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    backgroundColor: colors.primary,
   },
   buttonGradient: {
     paddingVertical: 15,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#A855F7',
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -138,7 +144,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   footerText: {
-    color: 'rgba(255,255,255,0.6)',
+    color: colors.textSecondary,
     fontSize: 14,
     textAlign: 'center',
   },

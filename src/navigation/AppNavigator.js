@@ -12,123 +12,97 @@ import LanguageScreen from '../screens/settings/LanguageScreen';
 import SettingsScreen from '../screens/settings/SettingsScreen';
 import HelpSupportScreen from '../screens/settings/HelpSupportScreen';
 
+import { useTheme } from '../contexts/ThemeContext';
+import { getThemeColors } from '../utils/theme';
+
 const Stack = createStackNavigator();
 
-export default function AppNavigator() {
+function AppNavigatorContent() {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+
+  // Common header options that adapt to theme
+  const getHeaderOptions = (title) => ({
+    headerShown: true,
+    title: title,
+    headerStyle: {
+      backgroundColor: colors.cardBackground,
+    },
+    headerTintColor: colors.primary,
+    headerTitleStyle: {
+      color: colors.text,
+      fontWeight: '600',
+    },
+  });
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator 
-        screenOptions={{ 
-          headerShown: false,
-          headerStyle: {
-            backgroundColor: '#FFFFFF',
-          },
-          headerTintColor: '#A855F7',
-          headerTitleStyle: {
-            color: '#A855F7',
-            fontWeight: '600',
-          },
-        }}
-      >
+    <Stack.Navigator 
+      screenOptions={{ 
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: colors.cardBackground,
+        },
+        headerTintColor: colors.primary,
+        headerTitleStyle: {
+          color: colors.text,
+          fontWeight: '600',
+        },
+      }}
+    >
         <Stack.Screen name="Auth" component={AuthNavigator} />
         <Stack.Screen name="MainApp" component={MainNavigator} />
         <Stack.Screen
           name="AttractionDetails"
           component={AttractionDetails}
-          options={{ 
-            headerShown: true,
-            title: 'Attraction Details',
-            headerStyle: {
-              backgroundColor: '#FFFFFF',
-            },
-            headerTintColor: '#A855F7',
-          }}
+          options={getHeaderOptions('Attraction Details')}
         />
         <Stack.Screen
           name="EditProfile"
           component={EditProfileScreen}
-          options={{ 
-            headerShown: true,
-            title: 'Edit Profile',
-            headerStyle: {
-              backgroundColor: '#FFFFFF',
-            },
-            headerTintColor: '#A855F7',
-          }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="FavoriteSpots"
           component={FavoriteSpotsScreen}
-          options={{ 
-            headerShown: true,
-            title: 'Favorite Spots',
-            headerStyle: {
-              backgroundColor: '#FFFFFF',
-            },
-            headerTintColor: '#A855F7',
-          }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="MyReviews"
           component={MyReviewsScreen}
-          options={{ 
-            headerShown: true,
-            title: 'My Reviews',
-            headerStyle: {
-              backgroundColor: '#FFFFFF',
-            },
-            headerTintColor: '#A855F7',
-          }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="TravelHistory"
           component={TravelHistoryScreen}
-          options={{ 
-            headerShown: true,
-            title: 'Travel History',
-            headerStyle: {
-              backgroundColor: '#FFFFFF',
-            },
-            headerTintColor: '#A855F7',
-          }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Language"
           component={LanguageScreen}
-          options={{ 
-            headerShown: true,
-            title: 'Language',
-            headerStyle: {
-              backgroundColor: '#FFFFFF',
-            },
-            headerTintColor: '#A855F7',
-          }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}
           options={{ 
-            headerShown: true,
+            headerShown: false,
             title: 'Settings',
-            headerStyle: {
-              backgroundColor: '#FFFFFF',
-            },
-            headerTintColor: '#A855F7',
           }}
         />
+
         <Stack.Screen
           name="HelpSupport"
           component={HelpSupportScreen}
-          options={{ 
-            headerShown: true,  
-            title: 'Help & Support',
-            headerStyle: {
-              backgroundColor: '#FFFFFF',
-            },
-            headerTintColor: '#A855F7',
-          }}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
+  );
+}
+
+export default function AppNavigator() {
+  return (
+    <NavigationContainer>
+      <AppNavigatorContent />
     </NavigationContainer>
   );
 } 

@@ -14,6 +14,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Formik } from 'formik';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
+import Logo from '../../components/common/Logo';
 
 // SOLID Principle imports
 import ValidationService from '../../services/validation/ValidationService';
@@ -23,6 +26,14 @@ import LoginController from '../../controllers/LoginController';
 const { width, height } = Dimensions.get('window');
 
 const Login = ({ navigation }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
+  // Debug logging
+  console.log('Login Screen - isDarkMode:', isDarkMode);
+  console.log('Login Screen - colors.cardBackground:', colors.cardBackground);
+  
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,12 +54,7 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
         style={styles.keyboardContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -59,10 +65,7 @@ const Login = ({ navigation }) => {
         >
           {/* Header */}
           <View style={styles.header}>
-            <View style={styles.appIcon}>
-              <Ionicons name="location" size={32} color="#FFFFFF" />
-            </View>
-            <Text style={styles.appName}>Cebu Explorer</Text>
+            <Logo size="normal" />
             <Text style={styles.welcomeText}>Welcome!</Text>
             <Text style={styles.subtitle}>Please sign in to continue</Text>
           </View>
@@ -155,7 +158,7 @@ const Login = ({ navigation }) => {
                     disabled={isLoading}
                   >
                     <Text style={styles.createAccountText}>
-                      Don't have an account? <Text style={styles.createAccountLinkText}>Create</Text>
+                      Don't have an account? <Text style={styles.createAccountLinkText}>Create Account</Text>
                     </Text>
                   </TouchableOpacity>
               </View>
@@ -163,11 +166,11 @@ const Login = ({ navigation }) => {
           </Formik>
         </ScrollView>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -184,33 +187,32 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: 40,
+    backgroundColor: isDarkMode ? '#1F2937' : 'rgba(255,255,255,0.1)',
+    borderRadius: 15,
+    padding: 20,
+    marginHorizontal: 15,
+    marginTop: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: isDarkMode ? 0.3 : 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: isDarkMode ? '#374151' : 'rgba(255,255,255,0.2)',
   },
-  appIcon: {
-    width: 64,
-    height: 64,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  appName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 24,
-  },
+
   welcomeText: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: colors.text,
     marginBottom: 8,
+    marginTop: 15,
   },
   subtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
-
   formContainer: {
     width: '100%',
     paddingHorizontal: 0,
@@ -221,18 +223,18 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.text,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: colors.border,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: '#374151',
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    color: colors.text,
+    backgroundColor: colors.inputBackground,
   },
   passwordContainer: {
     position: 'relative',
@@ -252,17 +254,17 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     fontSize: 14,
-    color: '#FFFFFF',
+    color: colors.primary,
     fontWeight: '500',
   },
   loginButton: {
-    backgroundColor: '#A855F7',
+    backgroundColor: colors.primary,
     borderRadius: 25,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
-    shadowColor: '#A855F7',
+    shadowColor: colors.primary,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -281,14 +283,14 @@ const styles = StyleSheet.create({
   },
   createAccountText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
   },
   createAccountLinkText: {
-    color: '#FFFFFF',
+    color: colors.primary,
     fontWeight: '600',
   },
   errorText: {
-    color: '#FFE4E1',
+    color: colors.error,
     fontSize: 12,
     marginTop: -15,
     marginBottom: 10,

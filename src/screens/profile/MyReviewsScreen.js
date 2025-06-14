@@ -9,7 +9,8 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const mockReviews = [
   {
@@ -48,6 +49,10 @@ const mockReviews = [
 ];
 
 const MyReviewsScreen = ({ navigation }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const [reviews, setReviews] = useState(mockReviews);
 
   const deleteReview = (id, spotName) => {
@@ -102,7 +107,7 @@ const MyReviewsScreen = ({ navigation }) => {
             <Ionicons 
               name="location-outline" 
               size={14} 
-              color="#6c757d"
+              color={colors.textSecondary}
               accessible={false}
             />
             <Text style={styles.location}>{item.location}</Text>
@@ -190,7 +195,7 @@ const MyReviewsScreen = ({ navigation }) => {
       <Ionicons 
         name="chatbubble-outline" 
         size={80} 
-        color="#ccc"
+        color={colors.textSecondary}
         accessible={false}
       />
       <Text 
@@ -213,7 +218,7 @@ const MyReviewsScreen = ({ navigation }) => {
         accessible={true}
         accessibilityRole="button"
         accessibilityLabel="Start Exploring"
-        accessibilityHint="Navigate to home screen to discover places to review"
+        accessibilityHint="Navigate to home screen to find places to review"
       >
         <Text style={styles.exploreButtonText}>Start Exploring</Text>
       </TouchableOpacity>
@@ -221,51 +226,46 @@ const MyReviewsScreen = ({ navigation }) => {
   );
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View 
         style={styles.content}
         accessible={true}
         accessibilityLabel="My Reviews Screen"
       >
-      <View style={styles.header}>
-        <Text 
-          style={styles.headerTitle}
-          accessible={true}
-          accessibilityRole="text"
-        >
-          My Reviews
-        </Text>
-        <Text 
-          style={styles.headerSubtitle}
-          accessible={true}
-          accessibilityRole="text"
-          accessibilityLabel={`You have written ${reviews.length} reviews`}
-        >
-          {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
-        </Text>
-      </View>
+        <View style={styles.header}>
+          <Text 
+            style={styles.headerTitle}
+            accessible={true}
+            accessibilityRole="text"
+          >
+            My Reviews
+          </Text>
+          <Text 
+            style={styles.headerSubtitle}
+            accessible={true}
+            accessibilityRole="text"
+            accessibilityLabel={`You have written ${reviews.length} reviews`}
+          >
+            {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
+          </Text>
+        </View>
 
-      <FlatList
-        data={reviews}
-        renderItem={renderReviewItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={reviews.length === 0 ? styles.emptyList : styles.list}
-        ListEmptyComponent={renderEmptyList}
-        showsVerticalScrollIndicator={false}
-        accessible={false}
-        accessibilityLabel="List of your reviews"
-      />
+        <FlatList
+          data={reviews}
+          renderItem={renderReviewItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={reviews.length === 0 ? styles.emptyList : styles.list}
+          ListEmptyComponent={renderEmptyList}
+          showsVerticalScrollIndicator={false}
+          accessible={false}
+          accessibilityLabel="List of your reviews"
+        />
+      </View>
     </View>
-    </LinearGradient>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -276,45 +276,56 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 15,
+    marginTop: 50,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   list: {
     padding: 15,
   },
   emptyList: {
-    flexGrow: 1,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
+    padding: 20,
   },
   reviewCard: {
+    backgroundColor: colors.cardBackground,
     borderRadius: 15,
     marginBottom: 15,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-  },
-  image: {
-    width: '100%',
-    height: 150,
-    resizeMode: 'cover',
-  },
-  cardContent: {
-    padding: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   cardHeader: {
-    marginBottom: 10,
+    flexDirection: 'row',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  image: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    marginRight: 15,
   },
   spotInfo: {
     flex: 1,
@@ -323,28 +334,29 @@ const styles = StyleSheet.create({
   spotName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 5,
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 5,
   },
   location: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginLeft: 4,
+    color: colors.textSecondary,
+    marginLeft: 5,
   },
   reviewDate: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
   },
   reviewContent: {
     padding: 15,
   },
   ratingContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
   },
@@ -352,64 +364,66 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   deleteButton: {
-    padding: 8,
-    minHeight: 44,
-    minWidth: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 5,
   },
   reviewText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.text,
     lineHeight: 20,
     marginBottom: 15,
   },
   reviewStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    paddingTop: 10,
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 15,
   },
   statText: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginLeft: 4,
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginLeft: 5,
   },
   emptyContainer: {
-    alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
   },
   emptyTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
     marginTop: 20,
     marginBottom: 10,
+    textAlign: 'center',
   },
   emptySubtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 30,
-    lineHeight: 24,
+    lineHeight: 22,
   },
   exploreButton: {
     backgroundColor: '#A855F7',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
-    minHeight: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   exploreButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
 

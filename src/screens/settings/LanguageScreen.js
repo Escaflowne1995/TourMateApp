@@ -8,7 +8,8 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const languages = [
   { id: '1', name: 'English', nativeName: 'English', code: 'en' },
@@ -21,6 +22,10 @@ const languages = [
 ];
 
 const LanguageScreen = ({ navigation }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   const handleLanguageSelect = (languageCode, languageName) => {
@@ -88,12 +93,7 @@ const LanguageScreen = ({ navigation }) => {
   );
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View 
         style={styles.content}
         accessible={true}
@@ -136,11 +136,11 @@ const LanguageScreen = ({ navigation }) => {
           </Text>
         </View>
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -151,25 +151,34 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 15,
+    marginTop: 50,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   languageContainer: {
-    marginTop: 20,
-    marginHorizontal: 15,
+    margin: 15,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   languageItem: {
     flexDirection: 'row',
@@ -178,10 +187,10 @@ const styles = StyleSheet.create({
     padding: 20,
     minHeight: 70,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: colors.border,
   },
   selectedLanguageItem: {
-          backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    backgroundColor: colors.surface,
     borderColor: '#A855F7',
     borderWidth: 2,
   },
@@ -192,12 +201,11 @@ const styles = StyleSheet.create({
   },
   languageInfo: {
     flex: 1,
-    marginLeft: 15,
   },
   languageName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 4,
   },
   selectedLanguageName: {
@@ -205,27 +213,30 @@ const styles = StyleSheet.create({
   },
   languageNative: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
   },
   selectedLanguageNative: {
-    color: 'rgba(168, 85, 247, 0.9)',
-  },
-  footer: {
-    padding: 20,
-    marginHorizontal: 15,
-    marginBottom: 20,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 215, 0, 0.3)',
-  },
-  footerText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
-    textAlign: 'center',
-    lineHeight: 20,
+    color: '#A855F7',
   },
   checkIcon: {
     marginLeft: 10,
+  },
+  footer: {
+    margin: 15,
+    padding: 20,
+    borderRadius: 15,
+    backgroundColor: colors.cardBackground,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  footerText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });
 

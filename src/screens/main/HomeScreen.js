@@ -8,7 +8,9 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const featuredAttractions = [
   {
@@ -88,6 +90,10 @@ const localDelicacies = [
 ];
 
 const HomeScreen = ({ navigation, route, userData: userDataProp }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const userData = userDataProp || route.params?.userData || {};
   const renderAttractionItem = ({ item }) => (
     <TouchableOpacity
@@ -132,17 +138,10 @@ const HomeScreen = ({ navigation, route, userData: userDataProp }) => {
   );
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView>
         <View style={styles.header}>
-          <Text style={styles.welcomeText}>
-            Welcome, {userData.fullName || userData.name || 'Explorer'}!
-          </Text>
+          <Text style={styles.welcomeText}>Welcome, {userData.fullName?.split(' ')[0] || 'Guest'}!</Text>
           <Text style={styles.subText}>Discover Cebu</Text>
           <Text style={styles.subTextSmall}>Experience the Queen City of the South</Text>
         </View>
@@ -180,30 +179,40 @@ const HomeScreen = ({ navigation, route, userData: userDataProp }) => {
           />
         </View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
   header: {
     padding: 20,
+    marginHorizontal: 15,
+    marginTop: 50,
+    borderRadius: 15,
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   welcomeText: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
+    marginBottom: 5,
   },
   subText: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   subTextSmall: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   section: {
@@ -213,14 +222,19 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 15,
-    color: '#fff',
+    color: colors.text,
   },
   attractionCard: {
     width: 280,
     borderRadius: 15,
     marginRight: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   attractionImage: {
     width: '100%',
@@ -232,11 +246,11 @@ const styles = StyleSheet.create({
   attractionName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   attractionLocation: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   ratingPrice: {
@@ -245,16 +259,21 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   rating: {
-    color: '#A855F7',
+    color: colors.primary,
     fontSize: 14,
     fontWeight: '600',
   },
   destinationCard: {
     width: 160,
     marginRight: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
     borderRadius: 15,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   destinationImage: {
     width: '100%',
@@ -264,12 +283,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 10,
-    color: '#fff',
+    color: colors.text,
     paddingHorizontal: 10,
   },
   destinationLocation: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
     paddingHorizontal: 10,
     paddingBottom: 10,
@@ -278,8 +297,13 @@ const styles = StyleSheet.create({
     width: 250,
     borderRadius: 15,
     marginRight: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   delicacyImage: {
     width: '100%',
@@ -291,21 +315,21 @@ const styles = StyleSheet.create({
   delicacyName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   delicacyLocation: {
     fontSize: 14,
-    color: '#A855F7',
+    color: colors.primary,
     marginTop: 5,
   },
   delicacyDescription: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   delicacyPrice: {
     fontSize: 14,
-    color: '#A855F7',
+    color: colors.primary,
     marginTop: 8,
     fontWeight: 'bold',
   },

@@ -16,8 +16,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { auth, db } from '../../services/firebase/firebaseConfig';
 import { doc, updateDoc, setDoc } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const EditProfileScreen = ({ navigation, route }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const userData = route.params?.userData || {};
   const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -198,12 +204,7 @@ const EditProfileScreen = ({ navigation, route }) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView 
         style={styles.scrollView}
         accessible={true}
@@ -316,11 +317,11 @@ const EditProfileScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
     </ScrollView>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -330,8 +331,16 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingTop: 40,
-    paddingBottom: 30,
+    padding: 20,
+    marginHorizontal: 15,
+    marginTop: 50,
+    borderRadius: 15,
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   avatarContainer: {
     position: 'relative',
@@ -341,20 +350,20 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     borderWidth: 3,
-    borderColor: '#fff',
+    borderColor: colors.border,
   },
   cameraIcon: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#A855F7',
+    backgroundColor: colors.primary,
     width: 36,
     height: 36,
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: colors.cardBackground,
   },
   form: {
     paddingHorizontal: 20,
@@ -366,18 +375,20 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 10,
     marginLeft: 5,
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.inputBackground,
     borderRadius: 15,
     paddingHorizontal: 20,
     paddingVertical: 15,
     fontSize: 16,
-    color: '#fff',
+    color: colors.text,
     minHeight: 50,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   saveButton: {
     borderRadius: 25,
@@ -388,6 +399,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    backgroundColor: colors.primary,
   },
   buttonGradient: {
     padding: 18,

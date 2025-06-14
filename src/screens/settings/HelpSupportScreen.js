@@ -9,9 +9,14 @@ import {
   Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const HelpSupportScreen = ({ navigation }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const [expandedFAQ, setExpandedFAQ] = useState(null);
 
   const contactOptions = [
@@ -108,7 +113,7 @@ const HelpSupportScreen = ({ navigation }) => {
         <Ionicons 
           name={option.icon} 
           size={24} 
-                          color="#A855F7" 
+          color="#A855F7" 
           style={styles.contactIcon}
           accessible={false}
         />
@@ -119,7 +124,7 @@ const HelpSupportScreen = ({ navigation }) => {
         <Ionicons 
           name="chevron-forward" 
           size={20} 
-          color="rgba(255, 255, 255, 0.7)"
+          color={colors.textSecondary}
           accessible={false}
         />
       </View>
@@ -142,7 +147,7 @@ const HelpSupportScreen = ({ navigation }) => {
         <Ionicons 
           name={expandedFAQ === faq.id ? 'chevron-up' : 'chevron-down'} 
           size={20} 
-          color="rgba(255, 255, 255, 0.7)"
+          color={colors.textSecondary}
           accessible={false}
         />
       </View>
@@ -159,12 +164,7 @@ const HelpSupportScreen = ({ navigation }) => {
   );
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView 
         style={styles.scrollView}
         accessible={true}
@@ -247,61 +247,65 @@ const HelpSupportScreen = ({ navigation }) => {
           </Text>
         </View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
   scrollView: {
     flex: 1,
-    backgroundColor: 'transparent',
   },
   header: {
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 10,
+    marginTop: 50,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   section: {
-    marginTop: 20,
-    marginHorizontal: 15,
+    margin: 15,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 15,
-    paddingHorizontal: 5,
   },
   contactContainer: {
+    backgroundColor: colors.cardBackground,
     borderRadius: 15,
-    padding: 10,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   contactItem: {
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    minHeight: 70,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: colors.border,
   },
   contactContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: 20,
   },
   contactIcon: {
     marginRight: 15,
@@ -312,23 +316,26 @@ const styles = StyleSheet.create({
   contactTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 4,
   },
   contactSubtitle: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
   },
   faqContainer: {
+    backgroundColor: colors.cardBackground,
     borderRadius: 15,
-    padding: 10,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   faqItem: {
-    paddingVertical: 15,
-    paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: colors.border,
+    padding: 20,
   },
   faqHeader: {
     flexDirection: 'row',
@@ -338,14 +345,14 @@ const styles = StyleSheet.create({
   faqQuestion: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
     flex: 1,
     marginRight: 10,
   },
   faqAnswer: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 10,
+    color: colors.textSecondary,
+    marginTop: 15,
     lineHeight: 20,
   },
   appInfoContainer: {

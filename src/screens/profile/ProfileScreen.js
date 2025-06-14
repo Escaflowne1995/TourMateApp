@@ -14,8 +14,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../services/firebase/firebaseConfig';
 import UserService from '../../services/user/UserService';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const [isLoading, setIsLoading] = useState(false);
   const [currentUserData, setCurrentUserData] = useState(userDataProp || route.params?.userData || {});
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -157,12 +163,7 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -260,7 +261,7 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
                 <Ionicons 
                   name={item.icon} 
                   size={24} 
-                  color="#fff"
+                  color={colors.text}
                   accessible={false}
                 />
                 <Text style={styles.menuItemText}>{item.title}</Text>
@@ -276,7 +277,7 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
                 <Ionicons 
                   name="chevron-forward" 
                   size={24} 
-                  color="rgba(255, 255, 255, 0.7)"
+                  color={colors.textSecondary}
                   accessible={false}
                 />
               )}
@@ -314,11 +315,11 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
         </TouchableOpacity>
         </View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -333,7 +334,10 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 60,
     paddingBottom: 30,
-    backgroundColor: 'transparent',
+    backgroundColor: isDarkMode ? colors.cardBackground : 'transparent',
+    marginHorizontal: isDarkMode ? 15 : 0,
+    marginTop: isDarkMode ? 15 : 0,
+    borderRadius: isDarkMode ? 15 : 0,
   },
   contentSection: {
     flex: 1,
@@ -348,26 +352,26 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     borderWidth: 3,
-    borderColor: '#fff',
+    borderColor: colors.border,
   },
   refreshIndicator: {
     position: 'absolute',
     top: 5,
     right: 5,
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: colors.cardBackground,
     borderRadius: 12,
     padding: 4,
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
     marginTop: 15,
     textAlign: 'center',
   },
   email: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
     textAlign: 'center',
   },
@@ -378,7 +382,12 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginBottom: 0,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   statItem: {
     flex: 1,
@@ -387,11 +396,11 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   statLabel: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   menuContainer: {
@@ -399,7 +408,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 15,
     marginHorizontal: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   menuItem: {
     flexDirection: 'row',
@@ -408,7 +422,7 @@ const styles = StyleSheet.create({
     padding: 20,
     minHeight: 60,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: colors.border,
   },
   menuItemLeft: {
     flexDirection: 'row',
@@ -416,13 +430,13 @@ const styles = StyleSheet.create({
   },
   menuItemText: {
     fontSize: 16,
-    color: '#fff',
+    color: colors.text,
     marginLeft: 15,
     fontWeight: '500',
   },
   menuItemValue: {
     fontSize: 14,
-    color: '#A855F7',
+    color: colors.primary,
     fontWeight: 'bold',
   },
   logoutButton: {
@@ -435,7 +449,7 @@ const styles = StyleSheet.create({
     padding: 18,
     borderRadius: 25,
     minHeight: 56,
-    backgroundColor: '#A855F7',
+    backgroundColor: colors.primary,
   },
   logoutText: {
     fontSize: 16,

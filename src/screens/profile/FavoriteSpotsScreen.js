@@ -8,7 +8,8 @@ import {
   Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const mockFavorites = [
   {
@@ -41,6 +42,10 @@ const mockFavorites = [
 ];
 
 const FavoriteSpotsScreen = ({ navigation }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const [favorites, setFavorites] = useState(mockFavorites);
 
   const removeFavorite = (id) => {
@@ -71,7 +76,7 @@ const FavoriteSpotsScreen = ({ navigation }) => {
               <Ionicons 
                 name="location-outline" 
                 size={16} 
-                color="rgba(255,255,255,0.8)"
+                color={colors.textSecondary}
                 accessible={false}
               />
               <Text style={styles.location}>{item.location}</Text>
@@ -115,7 +120,7 @@ const FavoriteSpotsScreen = ({ navigation }) => {
       <Ionicons 
         name="heart-outline" 
         size={80} 
-        color="#ccc"
+        color={colors.textSecondary}
         accessible={false}
       />
       <Text 
@@ -146,12 +151,7 @@ const FavoriteSpotsScreen = ({ navigation }) => {
   );
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View 
         style={styles.content}
         accessible={true}
@@ -186,11 +186,11 @@ const FavoriteSpotsScreen = ({ navigation }) => {
         accessibilityLabel="List of favorite spots"
       />
     </View>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -201,39 +201,48 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 15,
+    marginTop: 50,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   list: {
     padding: 15,
   },
   emptyList: {
-    flexGrow: 1,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
+    padding: 20,
   },
   favoriteCard: {
+    backgroundColor: colors.cardBackground,
     borderRadius: 15,
     marginBottom: 15,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   image: {
     width: '100%',
     height: 200,
-    resizeMode: 'cover',
   },
   cardContent: {
     padding: 15,
@@ -251,7 +260,7 @@ const styles = StyleSheet.create({
   spotName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 5,
   },
   locationContainer: {
@@ -260,15 +269,11 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginLeft: 4,
+    color: colors.textSecondary,
+    marginLeft: 5,
   },
   removeButton: {
     padding: 5,
-    minHeight: 44,
-    minWidth: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   cardFooter: {
     flexDirection: 'row',
@@ -280,50 +285,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rating: {
-    fontSize: 16,
-    color: '#A855F7',
-    marginLeft: 4,
+    fontSize: 14,
     fontWeight: '600',
+    color: colors.text,
+    marginLeft: 5,
   },
   category: {
-    fontSize: 14,
-    color: '#A855F7',
-    fontWeight: '600',
-    paddingHorizontal: 10,
+    fontSize: 12,
+    color: colors.textSecondary,
+    backgroundColor: colors.surface,
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   emptyContainer: {
-    alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
   },
   emptyTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
     marginTop: 20,
     marginBottom: 10,
+    textAlign: 'center',
   },
   emptySubtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 30,
-    lineHeight: 24,
+    lineHeight: 22,
   },
   exploreButton: {
     backgroundColor: '#A855F7',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
-    minHeight: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   exploreButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
 

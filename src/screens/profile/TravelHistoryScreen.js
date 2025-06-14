@@ -8,7 +8,8 @@ import {
   Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const mockTravelHistory = [
   {
@@ -49,6 +50,10 @@ const mockTravelHistory = [
 ];
 
 const TravelHistoryScreen = ({ navigation }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const [travelHistory, setTravelHistory] = useState(mockTravelHistory);
 
   const getStatusColor = (status) => {
@@ -80,7 +85,7 @@ const TravelHistoryScreen = ({ navigation }) => {
               <Ionicons 
                 name="calendar-outline" 
                 size={16} 
-                color="rgba(255, 255, 255, 0.7)"
+                color={colors.textSecondary}
                 accessible={false}
               />
               <Text style={styles.metaText}>{new Date(item.date).toLocaleDateString()}</Text>
@@ -89,7 +94,7 @@ const TravelHistoryScreen = ({ navigation }) => {
               <Ionicons 
                 name="time-outline" 
                 size={16} 
-                color="rgba(255, 255, 255, 0.7)"
+                color={colors.textSecondary}
                 accessible={false}
               />
               <Text style={styles.metaText}>{item.duration}</Text>
@@ -148,7 +153,7 @@ const TravelHistoryScreen = ({ navigation }) => {
       <Ionicons 
         name="map-outline" 
         size={80} 
-        color="rgba(255, 255, 255, 0.3)"
+        color={colors.textSecondary}
         accessible={false}
       />
       <Text 
@@ -179,12 +184,7 @@ const TravelHistoryScreen = ({ navigation }) => {
   );
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View 
         style={styles.content}
         accessible={true}
@@ -202,7 +202,7 @@ const TravelHistoryScreen = ({ navigation }) => {
             style={styles.headerSubtitle}
             accessible={true}
             accessibilityRole="text"
-            accessibilityLabel={`You have ${travelHistory.length} completed trips`}
+            accessibilityLabel={`You have ${travelHistory.length} trips in your history`}
           >
             {travelHistory.length} {travelHistory.length === 1 ? 'trip' : 'trips'}
           </Text>
@@ -219,11 +219,11 @@ const TravelHistoryScreen = ({ navigation }) => {
           accessibilityLabel="List of your travel history"
         />
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -234,133 +234,44 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 15,
+    marginTop: 50,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   list: {
     padding: 15,
   },
   emptyList: {
-    flexGrow: 1,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
+    padding: 20,
   },
   tripCard: {
+    backgroundColor: colors.cardBackground,
     borderRadius: 15,
     marginBottom: 15,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    resizeMode: 'cover',
-  },
-  cardContent: {
     padding: 15,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 10,
-  },
-  tripInfo: {
-    flex: 1,
-  },
-  placeName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 5,
-  },
-  location: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginLeft: 4,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  visitDate: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.8)',
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-    backgroundColor: '#A855F7',
-  },
-  statusText: {
-    fontSize: 12,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rating: {
-    fontSize: 16,
-    color: '#A855F7',
-    marginLeft: 4,
-    fontWeight: '600',
-  },
-  duration: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
-    textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 24,
-  },
-  startTravelButton: {
-    backgroundColor: '#A855F7',
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 25,
-    minHeight: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  startTravelButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   tripHeader: {
     flexDirection: 'row',
@@ -368,36 +279,48 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 15,
   },
+  tripInfo: {
+    flex: 1,
+    marginRight: 10,
+  },
   tripName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 8,
   },
   tripMeta: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    gap: 15,
   },
   metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 20,
-    marginBottom: 5,
   },
   metaText: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: colors.textSecondary,
     marginLeft: 5,
   },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
   placesPreview: {
-    paddingTop: 15,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 215, 0, 0.2)',
+    borderTopColor: colors.border,
+    paddingTop: 15,
   },
   placesTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 10,
   },
   placesImages: {
@@ -409,31 +332,54 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: colors.cardBackground,
   },
   moreImages: {
-    backgroundColor: '#A855F7',
+    backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
   moreImagesText: {
     fontSize: 12,
-    color: '#fff',
+    fontWeight: '600',
+    color: colors.text,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyTitle: {
+    fontSize: 24,
     fontWeight: 'bold',
+    color: colors.text,
+    marginTop: 20,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 30,
+    lineHeight: 22,
   },
   exploreButton: {
     backgroundColor: '#A855F7',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
-    minHeight: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   exploreButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });
 

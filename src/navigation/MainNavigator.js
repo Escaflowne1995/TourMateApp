@@ -4,11 +4,15 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/main/HomeScreen';
 import SearchScreen from '../screens/main/SearchScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import { useTheme } from '../contexts/ThemeContext';
+import { getThemeColors } from '../utils/theme';
 
 const Tab = createBottomTabNavigator();
 
 export default function MainNavigator({ route }) {
   const userData = route.params?.userData || {};
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
   
   return (
     <Tab.Navigator
@@ -27,13 +31,17 @@ export default function MainNavigator({ route }) {
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#A855F7',
-        tabBarInactiveTintColor: 'gray',
-        headerStyle: {
-          backgroundColor: '#FFFFFF',
+        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarStyle: {
+          backgroundColor: colors.cardBackground,
+          borderTopColor: colors.border,
         },
-        headerTintColor: '#A855F7',
+        headerStyle: {
+          backgroundColor: colors.cardBackground,
+        },
+        headerTintColor: colors.text,
         headerTitleStyle: {
-          color: '#A855F7',
+          color: colors.text,
           fontWeight: '600',
         },
       })}

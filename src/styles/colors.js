@@ -1,4 +1,4 @@
-export const Colors = {
+export const LightColors = {
   primary: '#A855F7',
   primaryDark: '#9333EA',
   secondary: '#FFFFFF',
@@ -10,4 +10,27 @@ export const Colors = {
   error: '#EF4444',
   success: '#10B981',
   warning: '#F59E0B',
-}; 
+  cardBackground: '#FFFFFF',
+  inputBackground: '#FFFFFF',
+  surface: '#FFFFFF',
+};
+
+export const DarkColors = {
+  primary: '#A855F7',
+  primaryDark: '#9333EA',
+  secondary: '#1F2937',
+  background: '#111827',
+  text: '#F9FAFB',
+  textSecondary: '#D1D5DB',
+  textPlaceholder: '#6B7280',
+  border: '#374151',
+  error: '#EF4444',
+  success: '#10B981',
+  warning: '#F59E0B',
+  cardBackground: '#1F2937',
+  inputBackground: '#374151',
+  surface: '#1F2937',
+};
+
+// Legacy export for backward compatibility
+export const Colors = LightColors; 

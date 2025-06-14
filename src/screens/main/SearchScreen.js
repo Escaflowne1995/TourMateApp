@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const allAttractions = [
   {
@@ -97,6 +99,10 @@ const allAttractions = [
 const categories = ['All', 'Historical', 'Cultural', 'Nature', 'Beach', 'Adventure', 'Viewpoint'];
 
 const SearchScreen = ({ navigation }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -137,7 +143,7 @@ const SearchScreen = ({ navigation }) => {
       <View style={styles.attractionInfo}>
         <Text style={styles.attractionName}>{item.name}</Text>
         <View style={styles.locationContainer}>
-          <Ionicons name="location-outline" size={16} color="rgba(255, 255, 255, 0.7)" />
+          <Ionicons name="location-outline" size={16} color={colors.textSecondary} />
           <Text style={styles.attractionLocation}>{item.location}</Text>
         </View>
         <View style={styles.ratingPrice}>
@@ -148,18 +154,13 @@ const SearchScreen = ({ navigation }) => {
   );
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.searchContainer}>
-        <Ionicons name="search-outline" size={20} color="rgba(255, 255, 255, 0.7)" />
+        <Ionicons name="search-outline" size={20} color={colors.textSecondary} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search destinations..."
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
+          placeholderTextColor={colors.textPlaceholder}
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
@@ -182,11 +183,11 @@ const SearchScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.attractionsList}
       />
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -196,13 +197,18 @@ const styles = StyleSheet.create({
     margin: 15,
     padding: 15,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   searchInput: {
     flex: 1,
     marginLeft: 10,
     fontSize: 16,
-    color: '#fff',
+    color: colors.text,
   },
   categoriesContainer: {
     marginBottom: 15,
@@ -212,14 +218,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginHorizontal: 5,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   selectedCategory: {
-    backgroundColor: '#A855F7',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   categoryText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
   },
   selectedCategoryText: {
     color: '#fff',
@@ -231,8 +240,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 15,
     marginBottom: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   attractionImage: {
     width: 120,
@@ -245,7 +259,7 @@ const styles = StyleSheet.create({
   attractionName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   locationContainer: {
     flexDirection: 'row',
@@ -254,7 +268,7 @@ const styles = StyleSheet.create({
   },
   attractionLocation: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginLeft: 5,
   },
   ratingPrice: {
@@ -263,7 +277,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   rating: {
-    color: '#A855F7',
+    color: colors.primary,
     fontSize: 14,
     fontWeight: '600',
   },

@@ -1,18 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const Logo = ({ size = 'normal' }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  
   const iconSize = size === 'large' ? 50 : 40;
   const mapIconSize = size === 'large' ? 40 : 30;
   const titleSize = size === 'large' ? 36 : 28;
   const subtitleSize = size === 'large' ? 18 : 16;
 
+  const styles = getStyles(colors);
+
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <Ionicons name="airplane" size={iconSize} color="#A855F7" />
-        <Ionicons name="map" size={mapIconSize} color="#fff" style={styles.mapIcon} />
+        <Ionicons name="airplane" size={iconSize} color={colors.primary} />
+        <Ionicons name="map" size={mapIconSize} color={colors.text} style={styles.mapIcon} />
       </View>
       <Text style={[styles.title, { fontSize: titleSize }]}>CebuXplore</Text>
       <Text style={[styles.subtitle, { fontSize: subtitleSize }]}>Discover Paradise</Text>
@@ -20,7 +27,7 @@ const Logo = ({ size = 'normal' }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors) => StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -36,11 +43,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
     letterSpacing: 1,
   },
   subtitle: {
-    color: '#A855F7',
+    color: colors.primary,
     letterSpacing: 2,
     marginTop: 5,
   },

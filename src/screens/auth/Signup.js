@@ -19,6 +19,9 @@ import * as Yup from 'yup';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '../../services/firebase/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
+import Logo from '../../components/common/Logo';
 
 const { width, height } = Dimensions.get('window');
 
@@ -44,6 +47,14 @@ const validationSchema = Yup.object().shape({
 });
 
 const Signup = ({ navigation, route }) => {
+  const { isDarkMode } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
+  // Debug logging
+  console.log('Signup Screen - isDarkMode:', isDarkMode);
+  console.log('Signup Screen - colors.cardBackground:', colors.cardBackground);
+  
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -162,12 +173,7 @@ const Signup = ({ navigation, route }) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView 
         style={styles.keyboardContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -178,10 +184,7 @@ const Signup = ({ navigation, route }) => {
         >
           {/* Header */}
           <View style={styles.header}>
-            <View style={styles.appIcon}>
-              <Ionicons name="person-add" size={32} color="#FFFFFF" />
-            </View>
-            <Text style={styles.appName}>Cebu Explorer</Text>
+            <Logo size="normal" />
             <Text style={styles.welcomeText}>Welcome!</Text>
             <Text style={styles.subtitle}>Create your account to get started</Text>
           </View>
@@ -363,11 +366,11 @@ const Signup = ({ navigation, route }) => {
           </Formik>
         </ScrollView>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -384,31 +387,31 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: 40,
+    backgroundColor: isDarkMode ? '#1F2937' : 'rgba(255,255,255,0.1)',
+    borderRadius: 15,
+    padding: 20,
+    marginHorizontal: 15,
+    marginTop: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: isDarkMode ? 0.3 : 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: isDarkMode ? '#374151' : 'rgba(255,255,255,0.2)',
   },
-  appIcon: {
-    width: 64,
-    height: 64,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  appName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    marginBottom: 24,
-  },
+
   welcomeText: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: colors.text,
     marginBottom: 8,
+    marginTop: 15,
   },
   subtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
   formContainer: {
     width: '100%',
@@ -419,18 +422,18 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.text,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: colors.border,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: '#374151',
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    color: colors.text,
+    backgroundColor: colors.inputBackground,
   },
   passwordContainer: {
     position: 'relative',
@@ -445,14 +448,14 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   createButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.primary,
     borderRadius: 25,
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
     marginBottom: 24,
-    shadowColor: '#000',
+    shadowColor: colors.primary,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -462,7 +465,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   createButtonText: {
-    color: '#A855F7',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
   },
@@ -471,14 +474,14 @@ const styles = StyleSheet.create({
   },
   signInText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
   },
   signInLinkText: {
-    color: '#FFFFFF',
+    color: colors.primary,
     fontWeight: '600',
   },
   errorText: {
-    color: '#FEF2F2',
+    color: colors.error,
     fontSize: 12,
     marginTop: -15,
     marginBottom: 10,

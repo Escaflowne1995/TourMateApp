@@ -10,23 +10,32 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getThemeColors } from '../../utils/theme';
 
 const SettingsScreen = ({ navigation }) => {
+  const { isDarkMode, toggleTheme } = useTheme();
+  const colors = getThemeColors(isDarkMode);
+  const styles = getStyles(colors, isDarkMode);
+  
   const [settings, setSettings] = useState({
     notifications: true,
     locationServices: true,
     offlineMode: false,
     autoSync: true,
-    darkMode: false,
     analytics: true,
     crashReports: true,
   });
 
   const toggleSetting = (key) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+    if (key === 'darkMode') {
+      toggleTheme();
+    } else {
+      setSettings(prev => ({
+        ...prev,
+        [key]: !prev[key]
+      }));
+    }
   };
 
   const handleClearCache = () => {
@@ -61,7 +70,6 @@ const SettingsScreen = ({ navigation }) => {
               locationServices: true,
               offlineMode: false,
               autoSync: true,
-              darkMode: false,
               analytics: true,
               crashReports: true,
             });
@@ -152,7 +160,7 @@ const SettingsScreen = ({ navigation }) => {
           title: 'Dark Mode',
           subtitle: 'Switch to dark theme',
           type: 'toggle',
-          value: settings.darkMode,
+          value: isDarkMode,
           icon: 'moon-outline',
         },
         {
@@ -163,6 +171,7 @@ const SettingsScreen = ({ navigation }) => {
           icon: 'refresh-outline',
           action: handleResetSettings,
         },
+
       ],
     },
   ];
@@ -182,7 +191,7 @@ const SettingsScreen = ({ navigation }) => {
         <Ionicons 
           name={item.icon} 
           size={24} 
-          color="#A855F7" 
+          color={colors.primary} 
           style={styles.settingIcon}
           accessible={false}
         />
@@ -195,15 +204,15 @@ const SettingsScreen = ({ navigation }) => {
         <Switch
           value={item.value}
           onValueChange={() => toggleSetting(item.id)}
-          trackColor={{ false: '#e9ecef', true: '#A855F7' }}
-          thumbColor={item.value ? '#fff' : '#f4f3f4'}
+          trackColor={{ false: colors.border, true: colors.primary }}
+          thumbColor={item.value ? '#fff' : colors.textSecondary}
           accessible={false}
         />
       ) : (
         <Ionicons 
           name="chevron-forward" 
           size={24} 
-          color="#adb5bd"
+          color={colors.textSecondary}
           accessible={false}
         />
       )}
@@ -226,12 +235,7 @@ const SettingsScreen = ({ navigation }) => {
   );
 
   return (
-    <LinearGradient
-      colors={['#A855F7', '#9333EA']}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView 
         style={styles.scrollView}
         accessible={true}
@@ -266,11 +270,11 @@ const SettingsScreen = ({ navigation }) => {
         </Text>
       </View>
     </ScrollView>
-    </LinearGradient>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -281,18 +285,23 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 15,
+    marginTop: 50,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     marginTop: 5,
   },
   section: {
@@ -301,14 +310,19 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 10,
     marginLeft: 20,
   },
   sectionContent: {
     marginHorizontal: 15,
     borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   settingItem: {
     flexDirection: 'row',
@@ -317,7 +331,7 @@ const styles = StyleSheet.create({
     padding: 20,
     minHeight: 80,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: colors.border,
   },
   settingContent: {
     flexDirection: 'row',
@@ -335,12 +349,12 @@ const styles = StyleSheet.create({
   settingTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.text,
     marginBottom: 4,
   },
   settingSubtitle: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   footer: {
@@ -349,7 +363,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: colors.textSecondary,
   },
 });
 
