@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { initializeAuth, getAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,9 +19,36 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication with AsyncStorage persistence
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage)
-});
+let auth;
+try {
+  // Check if AsyncStorage is available before using persistence
+  if (AsyncStorage && getReactNativePersistence) {
+    const persistence = getReactNativePersistence(AsyncStorage);
+    if (persistence) {
+      auth = initializeAuth(app, {
+        persistence: persistence
+      });
+    } else {
+      console.warn('React Native persistence not available, using default auth');
+      auth = initializeAuth(app);
+    }
+  } else {
+    console.warn('AsyncStorage not available, using default auth');
+    auth = initializeAuth(app);
+  }
+} catch (error) {
+  // If initializeAuth fails (e.g., already initialized), get the existing auth instance
+  console.log('Auth already initialized or failed, using existing instance:', error.message);
+  try {
+    auth = getAuth(app);
+  } catch (getAuthError) {
+    console.error('Failed to get auth instance:', getAuthError.message);
+    // Fallback to basic auth initialization
+    auth = initializeAuth(app);
+  }
+}
+
+export { auth };
 
 // Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);

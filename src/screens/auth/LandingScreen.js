@@ -4,16 +4,13 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   StatusBar,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import Logo from '../../components/common/Logo';
+import AuthScreenLayout from '../../components/layout/AuthScreenLayout';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeColors } from '../../utils/theme';
-
-const { width, height } = Dimensions.get('window');
 
 const LandingScreen = ({ navigation }) => {
   const { isDarkMode } = useTheme();
@@ -21,11 +18,12 @@ const LandingScreen = ({ navigation }) => {
   const styles = getStyles(colors, isDarkMode);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar translucent backgroundColor="transparent" />
+    <AuthScreenLayout colors={colors} backgroundIndex={2} showLogo={true}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      
       <View style={styles.content}>
         <View style={styles.header}>
-          <Logo size="large" />
+          <Text style={styles.title}>Discover Cebu</Text>
           <Text style={styles.subtitle}>
             Experience the Queen City of the South
           </Text>
@@ -33,15 +31,15 @@ const LandingScreen = ({ navigation }) => {
 
         <View style={styles.featuresContainer}>
           <View style={styles.featureItem}>
-            <Ionicons name="map-outline" size={32} color={colors.primary} />
+            <Ionicons name="map-outline" size={28} color={colors.primary} />
             <Text style={styles.featureText}>Explore Historical Sites</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="water-outline" size={32} color={colors.primary} />
+            <Ionicons name="water-outline" size={28} color={colors.primary} />
             <Text style={styles.featureText}>Beautiful Beaches</Text>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="restaurant-outline" size={32} color={colors.primary} />
+            <Ionicons name="restaurant-outline" size={28} color={colors.primary} />
             <Text style={styles.featureText}>Local Cuisine</Text>
           </View>
         </View>
@@ -51,9 +49,12 @@ const LandingScreen = ({ navigation }) => {
             style={styles.button}
             onPress={() => navigation.navigate('Login')}
           >
-            <View style={styles.buttonGradient}>
+            <LinearGradient
+              colors={[colors.primary, colors.secondary]}
+              style={styles.buttonGradient}
+            >
               <Text style={styles.buttonText}>Get Started</Text>
-            </View>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
@@ -63,35 +64,40 @@ const LandingScreen = ({ navigation }) => {
           </Text>
         </View>
       </View>
-    </View>
+    </AuthScreenLayout>
   );
 };
 
 const getStyles = (colors, isDarkMode) => StyleSheet.create({
-  container: {
-    flex: 1,
-    width: width,
-    height: height,
-  },
   content: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingTop: StatusBar.currentHeight + 40,
+    paddingTop: 20,
     paddingBottom: 40,
   },
   header: {
     alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: isDarkMode ? colors.cardBackground : 'transparent',
-    borderRadius: isDarkMode ? 15 : 0,
-    marginHorizontal: isDarkMode ? 15 : 0,
-    padding: isDarkMode ? 20 : 20,
+    padding: 20,
+  },
+  title: {
+    fontSize: 32,
+    color: '#FFFFFF',
+    fontWeight: '800',
+    marginBottom: 10,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
     fontSize: 18,
-    color: colors.textSecondary,
+    color: '#FFFFFF',
     textAlign: 'center',
-    marginTop: 20,
+    opacity: 0.9,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   featuresContainer: {
     paddingHorizontal: 20,
@@ -99,22 +105,21 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.cardBackground,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 15,
     padding: 20,
     marginBottom: 15,
-    borderWidth: 1,
-    borderColor: colors.border,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 8,
   },
   featureText: {
-    color: colors.text,
-    fontSize: 18,
+    color: '#2C3E50',
+    fontSize: 16,
     marginLeft: 15,
+    fontWeight: '600',
   },
   buttonContainer: {
     paddingHorizontal: 20,
@@ -123,30 +128,33 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     borderRadius: 25,
     overflow: 'hidden',
     marginBottom: 15,
-    elevation: 3,
+    elevation: 6,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    backgroundColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
   },
   buttonGradient: {
-    paddingVertical: 15,
+    paddingVertical: 18,
     alignItems: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   footer: {
     alignItems: 'center',
     paddingHorizontal: 20,
   },
   footerText: {
-    color: colors.textSecondary,
+    color: '#FFFFFF',
     fontSize: 14,
     textAlign: 'center',
+    opacity: 0.8,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
 });
 

@@ -54,7 +54,7 @@ function AppNavigatorContent() {
         <Stack.Screen
           name="AttractionDetails"
           component={AttractionDetails}
-          options={getHeaderOptions('Attraction Details')}
+          options={getHeaderOptions('Details')}
         />
         <Stack.Screen
           name="EditProfile"

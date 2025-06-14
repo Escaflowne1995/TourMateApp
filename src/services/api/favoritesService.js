@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth } from '../firebase/firebaseConfig';
 
 const FAVORITES_STORAGE_KEY = '@tourist_app_favorites';
 
@@ -8,12 +9,27 @@ class FavoritesService {
     this.loadFavorites();
   }
 
+  // Get user-specific storage key
+  getUserStorageKey() {
+    const user = auth.currentUser;
+    if (user) {
+      return `${FAVORITES_STORAGE_KEY}_${user.uid}`;
+    }
+    return `${FAVORITES_STORAGE_KEY}_guest`;
+  }
+
   // Load favorites from AsyncStorage
   async loadFavorites() {
     try {
-      const favoritesString = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
+      // First, attempt migration if needed
+      await this.migrateOldData();
+      
+      const storageKey = this.getUserStorageKey();
+      const favoritesString = await AsyncStorage.getItem(storageKey);
       if (favoritesString) {
         this.favorites = JSON.parse(favoritesString);
+      } else {
+        this.favorites = [];
       }
     } catch (error) {
       console.error('Error loading favorites:', error);
@@ -24,7 +40,8 @@ class FavoritesService {
   // Save favorites to AsyncStorage
   async saveFavorites() {
     try {
-      await AsyncStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(this.favorites));
+      const storageKey = this.getUserStorageKey();
+      await AsyncStorage.setItem(storageKey, JSON.stringify(this.favorites));
     } catch (error) {
       console.error('Error saving favorites:', error);
     }
@@ -84,6 +101,35 @@ class FavoritesService {
   async clearFavorites() {
     this.favorites = [];
     await this.saveFavorites();
+  }
+
+  // Migration method to move old shared data to user-specific storage
+  async migrateOldData() {
+    try {
+      const user = auth.currentUser;
+      if (!user) return; // Only migrate for authenticated users
+
+      // Check if user already has data (don't migrate if they do)
+      const userSpecificKey = this.getUserStorageKey();
+      const existingUserData = await AsyncStorage.getItem(userSpecificKey);
+      if (existingUserData) {
+        return; // User already has their own data
+      }
+
+      // Try to get old shared data
+      const oldSharedData = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
+      if (oldSharedData) {
+        // Save it to user-specific storage
+        await AsyncStorage.setItem(userSpecificKey, oldSharedData);
+        console.log('Migrated favorites data for user:', user.email);
+        
+        // Clear the old shared data to prevent future conflicts
+        await AsyncStorage.removeItem(FAVORITES_STORAGE_KEY);
+        console.log('Cleared old shared favorites data');
+      }
+    } catch (error) {
+      console.error('Error migrating favorites data:', error);
+    }
   }
 }
 

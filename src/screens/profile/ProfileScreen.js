@@ -18,6 +18,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeColors } from '../../utils/theme';
 import favoritesService from '../../services/api/favoritesService';
 import reviewsService from '../../services/api/reviewsService';
+import DataUtils from '../../utils/dataUtils';
 
 const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
   const { isDarkMode } = useTheme();
@@ -35,6 +36,9 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
     try {
       console.log('ProfileScreen: Loading counts...');
       
+      // Debug data separation (helps identify issues)
+      await DataUtils.debugDataSeparation();
+      
       const [favCount, revCount] = await Promise.all([
         favoritesService.getFavoritesCount(),
         reviewsService.getReviewsCount()
@@ -50,73 +54,6 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
       setFavoritesCount(0);
       setReviewsCount(0);
     }
-  };
-
-  // Test function to add sample data - for testing purposes
-  const addSampleData = async () => {
-    try {
-      // Add sample favorites
-      const sampleAttractions = [
-        {
-          id: 'sample1',
-          name: 'Temple of Leah',
-          location: 'Busay, Cebu City',
-          image: { uri: 'https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=300' },
-          rating: 4.5,
-          category: 'Historical'
-        },
-        {
-          id: 'sample2', 
-          name: 'Yap-Sandiego Ancestral House',
-          location: 'Parian, Cebu City',
-          image: { uri: 'https://images.unsplash.com/photo-1600298881974-6be191ceeda1?w=300' },
-          rating: 4.2,
-          category: 'Heritage'
-        }
-      ];
-
-      // Add to favorites
-      for (const attraction of sampleAttractions) {
-        await favoritesService.addToFavorites(attraction);
-      }
-
-      // Add sample reviews
-      await reviewsService.addReview(sampleAttractions[0], 5, 'Amazing temple with great views!');
-      await reviewsService.addReview(sampleAttractions[1], 4, 'Beautiful historic house, well preserved.');
-
-      // Reload counts
-      await loadCounts();
-      Alert.alert('Success', 'Sample data added! Check your favorites and reviews.');
-    } catch (error) {
-      console.error('Error adding sample data:', error);
-      Alert.alert('Error', 'Failed to add sample data');
-    }
-  };
-
-  // Test function to clear all data - for testing purposes
-  const clearAllData = async () => {
-    Alert.alert(
-      'Clear All Data',
-      'This will remove all favorites and reviews. Are you sure?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clear All',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await favoritesService.clearFavorites();
-              await reviewsService.clearReviews();
-              await loadCounts();
-              Alert.alert('Success', 'All data cleared!');
-            } catch (error) {
-              console.error('Error clearing data:', error);
-              Alert.alert('Error', 'Failed to clear data');
-            }
-          }
-        }
-      ]
-    );
   };
 
   // Refresh user data when screen focuses or user changes
@@ -220,22 +157,6 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
       accessibilityLabel: 'Help & Support',
       accessibilityHint: 'Get help and contact support',
     },
-    {
-      id: '10',
-      title: 'Add Sample Data (Testing)',
-      icon: 'add-circle-outline',
-      action: addSampleData,
-      accessibilityLabel: 'Add Sample Data',
-      accessibilityHint: 'Add sample favorites and reviews for testing',
-    },
-    {
-      id: '11',
-      title: 'Clear All Data (Testing)',
-      icon: 'trash-outline',
-      action: clearAllData,
-      accessibilityLabel: 'Clear All Data',
-      accessibilityHint: 'Clear all favorites and reviews data for testing',
-    },
   ];
 
   const handleLogout = () => {
@@ -278,166 +199,90 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={styles.container}>
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        accessibilityLabel="Profile Screen"
+        showsVerticalScrollIndicator={false}
+        refreshing={isRefreshing}
+        onRefresh={loadCounts}
       >
-        <View 
-          style={styles.header}
-          accessible={true}
-          accessibilityLabel="Profile Header"
+        {/* Premium Profile Header with Gradient */}
+        <LinearGradient
+          colors={[colors.primary, colors.secondary, colors.tertiary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.headerGradient}
         >
           <View style={styles.profileHeader}>
-            <Image
-              source={{ 
-                uri: currentUserData.avatar && currentUserData.avatar.startsWith('data:image') 
-                  ? currentUserData.avatar 
-                  : userProfile.avatar 
-              }}
-              style={styles.avatar}
-              accessible={true}
-              accessibilityRole="image"
-              accessibilityLabel={`Profile picture of ${userProfile.name}`}
-            />
-            {isRefreshing && (
-              <View style={styles.refreshIndicator}>
-                <ActivityIndicator size="small" color="#A855F7" />
+            <View style={styles.avatarContainer}>
+              <Image 
+                source={{ 
+                  uri: currentUserData.avatar && currentUserData.avatar.startsWith('data:image') 
+                    ? currentUserData.avatar 
+                    : userProfile.avatar 
+                }} 
+                style={styles.avatar} 
+              />
+            </View>
+            <Text style={styles.userName}>{userProfile.name}</Text>
+            <Text style={styles.userEmail}>{userProfile.email}</Text>
+            
+            {/* Premium Stats Cards */}
+            <View style={styles.statsContainer}>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>{userProfile.favoriteSpots}</Text>
+                <Text style={styles.statLabel}>Favorite Spots</Text>
               </View>
-            )}
-            <Text 
-              style={styles.name}
-              accessible={true}
-              accessibilityRole="text"
-              accessibilityLabel={`User name: ${userProfile.name}`}
-            >
-              {userProfile.name}
-            </Text>
-            <Text 
-              style={styles.email}
-              accessible={true}
-              accessibilityRole="text"
-              accessibilityLabel={`Email address: ${userProfile.email}`}
-            >
-              {userProfile.email}
-            </Text>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>{userProfile.reviews}</Text>
+                <Text style={styles.statLabel}>Reviews</Text>
+              </View>
+            </View>
           </View>
-        </View>
+        </LinearGradient>
 
-        <View style={styles.contentSection}>
-          <View 
-            style={styles.statsContainer}
-            accessible={true}
-            accessibilityRole="summary"
-            accessibilityLabel={`Your statistics: ${userProfile.favoriteSpots} favorite spots, ${userProfile.reviews} reviews`}
-          >
-          <TouchableOpacity 
-            style={styles.statItem}
-            onPress={() => navigation.navigate('FavoriteSpots')}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel={`${userProfile.favoriteSpots} favorite spots - tap to view`}
-          >
-            <Text 
-              style={styles.statNumber}
-              accessible={true}
-              accessibilityRole="text"
-            >
-              {userProfile.favoriteSpots}
-            </Text>
-            <Text style={styles.statLabel}>Favorite Spots</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.statItem}
-            onPress={() => navigation.navigate('MyReviews')}
-            accessible={true}  
-            accessibilityRole="button"
-            accessibilityLabel={`${userProfile.reviews} reviews - tap to view`}
-          >
-            <Text 
-              style={styles.statNumber}
-              accessible={true}
-              accessibilityRole="text"
-            >
-              {userProfile.reviews}
-            </Text>
-            <Text style={styles.statLabel}>Reviews</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View 
-          style={styles.menuContainer}
-          accessible={false}
-          accessibilityLabel="Profile menu options"
-        >
+        {/* Premium Menu Items */}
+        <View style={styles.menuContainer}>
           {menuItems.map((item) => (
             <TouchableOpacity
               key={item.id}
               style={styles.menuItem}
               onPress={item.action}
+              activeOpacity={0.8}
               accessible={true}
-              accessibilityRole="button"
               accessibilityLabel={item.accessibilityLabel}
               accessibilityHint={item.accessibilityHint}
-              accessibilityState={{ disabled: false }}
             >
-              <View style={styles.menuItemLeft}>
-                <Ionicons 
-                  name={item.icon} 
-                  size={24} 
-                  color={colors.text}
-                  accessible={false}
-                />
-                <Text style={styles.menuItemText}>{item.title}</Text>
+              <View style={styles.menuIconContainer}>
+                <Ionicons name={item.icon} size={24} color={colors.primary} />
               </View>
-              {item.value ? (
-                <Text 
-                  style={styles.menuItemValue}
-                  accessible={false}
-                >
-                  {item.value}
-                </Text>
-              ) : (
-                <Ionicons 
-                  name="chevron-forward" 
-                  size={24} 
-                  color={colors.textSecondary}
-                  accessible={false}
-                />
-              )}
+              <View style={styles.menuContent}>
+                <Text style={styles.menuTitle}>{item.title}</Text>
+                {item.value && (
+                  <Text style={styles.menuValue}>{item.value}</Text>
+                )}
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           ))}
-        </View>
-
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={handleLogout}
-          disabled={isLoading}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Logout"
-          accessibilityHint="Logout from your account"
-          accessibilityState={{ disabled: isLoading }}
-        >
-          {isLoading ? (
-            <ActivityIndicator 
-              color="#A855F7"
-              accessible={true}
-              accessibilityLabel="Logging out, please wait"
-            />
-          ) : (
-            <>
-              <Ionicons 
-                name="log-out-outline" 
-                size={24} 
-                color="#fff"
-                accessible={false}
-              />
-              <Text style={styles.logoutText}>Logout</Text>
-            </>
-          )}
-        </TouchableOpacity>
+          
+          {/* Premium Logout Button */}
+          <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={handleLogout}
+            disabled={isLoading}
+            activeOpacity={0.8}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#FFF" />
+            ) : (
+              <>
+                <Ionicons name="log-out-outline" size={24} color="#FFF" />
+                <Text style={styles.logoutText}>Logout</Text>
+              </>
+            )}
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -447,140 +292,145 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
 const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
-    backgroundColor: 'transparent',
   },
   scrollContent: {
-    flexGrow: 1,
-    backgroundColor: 'transparent',
+    paddingBottom: 20,
   },
-  header: {
+  headerGradient: {
     paddingTop: 60,
     paddingBottom: 30,
-    backgroundColor: isDarkMode ? colors.cardBackground : 'transparent',
-    marginHorizontal: isDarkMode ? 15 : 0,
-    marginTop: isDarkMode ? 15 : 0,
-    borderRadius: isDarkMode ? 15 : 0,
-  },
-  contentSection: {
-    flex: 1,
-    paddingTop: 20,
-    backgroundColor: 'transparent',
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   profileHeader: {
     alignItems: 'center',
+  },
+  avatarContainer: {
+    position: 'relative',
+    marginBottom: 16,
   },
   avatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    borderWidth: 3,
-    borderColor: colors.border,
+    borderWidth: 4,
+    borderColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
-  refreshIndicator: {
-    position: 'absolute',
-    top: 5,
-    right: 5,
-    backgroundColor: colors.cardBackground,
-    borderRadius: 12,
-    padding: 4,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginTop: 15,
+  userName: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#FFF',
+    marginBottom: 4,
     textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
-  email: {
+  userEmail: {
     fontSize: 16,
-    color: colors.textSecondary,
-    marginTop: 5,
+    color: '#FFF',
+    opacity: 0.9,
     textAlign: 'center',
+    marginBottom: 20,
   },
   statsContainer: {
     flexDirection: 'row',
-    padding: 20,
-    marginHorizontal: 20,
-    marginTop: 0,
-    marginBottom: 0,
-    borderRadius: 15,
-    backgroundColor: colors.cardBackground,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    justifyContent: 'space-around',
+    width: '100%',
+    paddingHorizontal: 20,
   },
-  statItem: {
-    flex: 1,
+  statCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 16,
+    padding: 16,
     alignItems: 'center',
+    minWidth: 100,
+    backdropFilter: 'blur(10px)',
   },
   statNumber: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text,
+    fontWeight: '800',
+    color: '#FFF',
+    marginBottom: 4,
   },
   statLabel: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginTop: 5,
+    fontSize: 12,
+    color: '#FFF',
+    opacity: 0.9,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   menuContainer: {
-    marginTop: 10,
-    paddingVertical: 10,
-    borderRadius: 15,
-    marginHorizontal: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  menuItem: {
     backgroundColor: colors.cardBackground,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  menuItem: {
-    flexDirection: 'row',
+  menuIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.primary + '20',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    minHeight: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    justifyContent: 'center',
   },
-  menuItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  menuContent: {
+    flex: 1,
+    marginLeft: 16,
   },
-  menuItemText: {
+  menuTitle: {
     fontSize: 16,
     color: colors.text,
-    marginLeft: 15,
-    fontWeight: '500',
+    fontWeight: '600',
+    marginBottom: 2,
   },
-  menuItemValue: {
+  menuValue: {
     fontSize: 14,
     color: colors.primary,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   logoutButton: {
+    backgroundColor: colors.error,
+    borderRadius: 16,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
-    marginBottom: 30,
-    marginHorizontal: 20,
-    padding: 18,
-    borderRadius: 25,
-    minHeight: 56,
-    backgroundColor: colors.primary,
+    marginBottom: 20,
+    shadowColor: colors.error,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   logoutText: {
+    color: '#FFF',
     fontSize: 16,
-    color: '#fff',
-    marginLeft: 10,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    marginLeft: 8,
   },
 });
 

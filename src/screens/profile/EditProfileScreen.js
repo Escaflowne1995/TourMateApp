@@ -301,7 +301,7 @@ const EditProfileScreen = ({ navigation, route }) => {
           accessibilityState={{ disabled: isLoading }}
         >
           <LinearGradient
-            colors={['#A855F7', '#9333EA']}
+            colors={[colors.primary, colors.primaryDark]}
             style={styles.buttonGradient}
           >
             {isLoading ? (

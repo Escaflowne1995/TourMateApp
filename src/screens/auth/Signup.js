@@ -5,12 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Alert,
-  Dimensions,
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,9 +17,8 @@ import { auth, db } from '../../services/firebase/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeColors } from '../../utils/theme';
-import Logo from '../../components/common/Logo';
-
-const { width, height } = Dimensions.get('window');
+import AuthScreenLayout from '../../components/layout/AuthScreenLayout';
+import EmailHistoryService from '../../services/storage/EmailHistoryService';
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -102,6 +97,9 @@ const Signup = ({ navigation, route }) => {
         Alert.alert('Note', 'Account created but profile data save failed. You can update it later.');
       }
       
+      // Save email to history for future login suggestions
+      await EmailHistoryService.saveEmail(values.email);
+      
       // Navigate directly to main app after successful signup
       const userData = {
         uid: user.uid,
@@ -173,267 +171,258 @@ const Signup = ({ navigation, route }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <KeyboardAvoidingView 
-        style={styles.keyboardContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <AuthScreenLayout colors={colors} backgroundIndex={1}>
+      <View style={styles.header}>
+        <Text style={styles.welcomeText}>Welcome!</Text>
+        <Text style={styles.subtitle}>Create your account to get started</Text>
+      </View>
+
+      <Formik
+        initialValues={{
+          firstName: '',
+          lastName: '',
+          email: route?.params?.email || '',
+          phone: '',
+          password: '',
+          confirmPassword: '',
+        }}
+        validationSchema={validationSchema}
+        onSubmit={handleSignup}
+        enableReinitialize={true}
       >
-        <ScrollView 
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <Logo size="normal" />
-            <Text style={styles.welcomeText}>Welcome!</Text>
-            <Text style={styles.subtitle}>Create your account to get started</Text>
-          </View>
-
-          {/* Signup Form */}
-          <Formik
-            initialValues={{
-              firstName: '',
-              lastName: '',
-              email: route?.params?.email || '',
-              phone: '',
-              password: '',
-              confirmPassword: '',
-            }}
-            validationSchema={validationSchema}
-            onSubmit={handleSignup}
-          >
-            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-              <View style={styles.formContainer}>
-                {/* First Name and Last Name Row */}
-                <View style={styles.nameRowContainer}>
-                  <View style={styles.nameInputContainer}>
-                    <Text style={styles.inputLabel}>First Name</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Enter your first name"
-                      placeholderTextColor="#9CA3AF"
-                      value={values.firstName}
-                      onChangeText={handleChange('firstName')}
-                      onBlur={handleBlur('firstName')}
-                      editable={!isLoading}
-                    />
-                    {touched.firstName && errors.firstName && (
-                      <Text style={styles.errorText}>{errors.firstName}</Text>
-                    )}
-                  </View>
-
-                  <View style={styles.nameInputContainer}>
-                    <Text style={styles.inputLabel}>Last Name</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Enter your last name"
-                      placeholderTextColor="#9CA3AF"
-                      value={values.lastName}
-                      onChangeText={handleChange('lastName')}
-                      onBlur={handleBlur('lastName')}
-                      editable={!isLoading}
-                    />
-                    {touched.lastName && errors.lastName && (
-                      <Text style={styles.errorText}>{errors.lastName}</Text>
-                    )}
-                  </View>
-                </View>
-
-                {/* Email Input */}
-                <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Email</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter your email"
-                    placeholderTextColor="#9CA3AF"
-                    value={values.email}
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    editable={!isLoading}
-                  />
-                </View>
-                {touched.email && errors.email && (
-                  <Text style={styles.errorText}>{errors.email}</Text>
+        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+          <View style={styles.formContainer}>
+            {/* First Name and Last Name Row */}
+            <View style={styles.nameRowContainer}>
+              <View style={styles.nameInputContainer}>
+                <Text style={styles.inputLabel}>First Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your first name"
+                  placeholderTextColor="#9CA3AF"
+                  value={values.firstName}
+                  onChangeText={handleChange('firstName')}
+                  onBlur={handleBlur('firstName')}
+                  editable={!isLoading}
+                />
+                {touched.firstName && errors.firstName && (
+                  <Text style={styles.errorText}>{errors.firstName}</Text>
                 )}
+              </View>
 
-                {/* Phone Input */}
-                <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Phone Number</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter your phone number"
-                    placeholderTextColor="#9CA3AF"
-                    value={values.phone}
-                    onChangeText={handleChange('phone')}
-                    onBlur={handleBlur('phone')}
-                    keyboardType="phone-pad"
-                    editable={!isLoading}
-                  />
-                </View>
-                {touched.phone && errors.phone && (
-                  <Text style={styles.errorText}>{errors.phone}</Text>
+              <View style={styles.nameInputContainer}>
+                <Text style={styles.inputLabel}>Last Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your last name"
+                  placeholderTextColor="#9CA3AF"
+                  value={values.lastName}
+                  onChangeText={handleChange('lastName')}
+                  onBlur={handleBlur('lastName')}
+                  editable={!isLoading}
+                />
+                {touched.lastName && errors.lastName && (
+                  <Text style={styles.errorText}>{errors.lastName}</Text>
                 )}
+              </View>
+            </View>
 
-                {/* Password Input */}
-                <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Password</Text>
-                  <View style={styles.passwordContainer}>
-                    <TextInput
-                      style={[styles.input, styles.passwordInput]}
-                      placeholder="Enter your password"
-                      placeholderTextColor="#9CA3AF"
-                      value={values.password}
-                      onChangeText={handleChange('password')}
-                      onBlur={handleBlur('password')}
-                      secureTextEntry={!showPassword}
-                      editable={!isLoading}
-                    />
-                    <TouchableOpacity
-                      style={styles.eyeButton}
-                      onPress={() => setShowPassword(!showPassword)}
-                      disabled={isLoading}
-                    >
-                      <Ionicons
-                        name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                        size={20}
-                        color="#9CA3AF"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                {touched.password && errors.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )}
+            {/* Email Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="#9CA3AF"
+                value={values.email}
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                editable={!isLoading}
+              />
+            </View>
+            {touched.email && errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
 
-                {/* Confirm Password Input */}
-                <View style={styles.inputContainer}>
-                  <Text style={styles.inputLabel}>Confirm Password</Text>
-                  <View style={styles.passwordContainer}>
-                    <TextInput
-                      style={[styles.input, styles.passwordInput]}
-                      placeholder="Confirm your password"
-                      placeholderTextColor="#9CA3AF"
-                      value={values.confirmPassword}
-                      onChangeText={handleChange('confirmPassword')}
-                      onBlur={handleBlur('confirmPassword')}
-                      secureTextEntry={!showConfirmPassword}
-                      editable={!isLoading}
-                    />
-                    <TouchableOpacity
-                      style={styles.eyeButton}
-                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                      disabled={isLoading}
-                    >
-                      <Ionicons
-                        name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
-                        size={20}
-                        color="#9CA3AF"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                {touched.confirmPassword && errors.confirmPassword && (
-                  <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-                )}
+            {/* Phone Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Phone Number</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your phone number"
+                placeholderTextColor="#9CA3AF"
+                value={values.phone}
+                onChangeText={handleChange('phone')}
+                onBlur={handleBlur('phone')}
+                keyboardType="phone-pad"
+                editable={!isLoading}
+              />
+            </View>
+            {touched.phone && errors.phone && (
+              <Text style={styles.errorText}>{errors.phone}</Text>
+            )}
 
-                {/* Create Button */}
-                <TouchableOpacity 
-                  style={[styles.createButton, isLoading && styles.disabledButton]} 
-                  onPress={handleSubmit}
+            {/* Password Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[styles.input, styles.passwordInput]}
+                  placeholder="Enter your password"
+                  placeholderTextColor="#9CA3AF"
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  secureTextEntry={!showPassword}
+                  editable={!isLoading}
+                />
+                <TouchableOpacity
+                  style={styles.eyeButton}
+                  onPress={() => setShowPassword(!showPassword)}
                   disabled={isLoading}
                 >
-                  {isLoading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.createButtonText}>Create</Text>
-                  )}
-                </TouchableOpacity>
-
-                {/* Sign In Link */}
-                <TouchableOpacity 
-                  style={styles.signInLink}
-                  onPress={() => navigation.navigate('Login')}
-                  disabled={isLoading}
-                >
-                  <Text style={styles.signInText}>
-                    Already have an account? <Text style={styles.signInLinkText}>Log In</Text>
-                  </Text>
+                  <Ionicons
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color="#6B7280"
+                  />
                 </TouchableOpacity>
               </View>
+            </View>
+            {touched.password && errors.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
             )}
-          </Formik>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </View>
+
+            {/* Confirm Password Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Confirm Password</Text>
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[styles.input, styles.passwordInput]}
+                  placeholder="Confirm your password"
+                  placeholderTextColor="#9CA3AF"
+                  value={values.confirmPassword}
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  secureTextEntry={!showConfirmPassword}
+                  editable={!isLoading}
+                />
+                <TouchableOpacity
+                  style={styles.eyeButton}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  disabled={isLoading}
+                >
+                  <Ionicons
+                    name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color="#6B7280"
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            {touched.confirmPassword && errors.confirmPassword && (
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            )}
+
+            {/* Create Button with Gradient */}
+            <TouchableOpacity 
+              style={[styles.createButton, isLoading && styles.disabledButton]} 
+              onPress={() => handleSubmit()}
+              disabled={isLoading}
+            >
+              <LinearGradient
+                colors={[colors.primary, colors.secondary]}
+                style={styles.buttonGradient}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.createButtonText}>Create Account</Text>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+
+            {/* Sign In Link */}
+            <TouchableOpacity 
+              style={styles.signInLink}
+              onPress={() => navigation.navigate('Login')}
+              disabled={isLoading}
+            >
+              <Text style={styles.signInText}>
+                Already have an account? <Text style={styles.signInLinkText}>Log In</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </Formik>
+    </AuthScreenLayout>
   );
 };
 
 const getStyles = (colors, isDarkMode) => StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardContainer: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-    minHeight: height,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-    backgroundColor: isDarkMode ? '#1F2937' : 'rgba(255,255,255,0.1)',
-    borderRadius: 15,
-    padding: 20,
-    marginHorizontal: 15,
-    marginTop: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: isDarkMode ? 0.3 : 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-    borderWidth: 1,
-    borderColor: isDarkMode ? '#374151' : 'rgba(255,255,255,0.2)',
-  },
-
-  welcomeText: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 8,
-    marginTop: 15,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
   formContainer: {
     width: '100%',
   },
-  inputContainer: {
+  header: {
+    alignItems: 'center',
     marginBottom: 20,
+  },
+  welcomeText: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 8,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    opacity: 0.9,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  nameRowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  nameInputContainer: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  inputContainer: {
+    marginBottom: 15,
   },
   inputLabel: {
     fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
+    fontWeight: '700',
+    color: '#FFFFFF',
     marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: colors.text,
-    backgroundColor: colors.inputBackground,
+    color: '#2C3E50',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   passwordContainer: {
     position: 'relative',
@@ -448,57 +437,59 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     padding: 4,
   },
   createButton: {
-    backgroundColor: colors.primary,
     borderRadius: 25,
-    paddingVertical: 16,
+    paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
-    marginBottom: 24,
-    shadowColor: colors.primary,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    marginTop: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: 6,
     elevation: 6,
+    overflow: 'hidden',
   },
   createButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
   },
   signInLink: {
     alignItems: 'center',
+    marginTop: 10,
   },
   signInText: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: '#FFFFFF',
+    opacity: 0.8,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   signInLinkText: {
     color: colors.primary,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   errorText: {
-    color: colors.error,
-    fontSize: 12,
-    marginTop: -15,
-    marginBottom: 10,
+    color: '#FFCACA',
+    fontSize: 13,
+    marginTop: 5,
     marginLeft: 4,
-    fontWeight: '500',
+    fontWeight: '700',
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   disabledButton: {
     opacity: 0.6,
   },
-  nameRowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  nameInputContainer: {
-    flex: 1,
-    marginHorizontal: 4,
+  buttonGradient: {
+    paddingVertical: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+    width: '100%',
   },
 });
 

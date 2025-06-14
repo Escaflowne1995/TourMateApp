@@ -2,6 +2,7 @@ import AuthService from '../services/auth/AuthService';
 import UserService from '../services/user/UserService';
 import NavigationService from '../services/navigation/NavigationService';
 import AlertService from '../utils/alert/AlertService';
+import EmailHistoryService from '../services/storage/EmailHistoryService';
 
 // Dependency Inversion: Depends on abstractions (services), not concrete implementations
 // Single Responsibility: Only orchestrates login flow
@@ -38,6 +39,9 @@ class LoginController {
 
     // Reset security attempts on successful login
     this.securityService.resetAttempts();
+    
+    // Save email to history for future suggestions
+    await EmailHistoryService.saveEmail(email);
     
     // Navigate to main app
     NavigationService.navigateToMainApp(navigation, userResult.userData);
