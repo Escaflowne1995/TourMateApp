@@ -18,14 +18,10 @@ const Logo = ({ size = 'normal' }) => {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <Ionicons name="airplane" size={iconSize} color="#FFFFFF" />
-        <Ionicons name="map" size={mapIconSize} color="#000000" style={styles.mapIcon} />
+        <Ionicons name="airplane" size={iconSize} color={colors.primary} />
+        <Ionicons name="map" size={mapIconSize} color={colors.text} style={styles.mapIcon} />
       </View>
-      <View style={styles.titleContainer}>
-        <Text style={[styles.title, { fontSize: titleSize, color: '#FFFFFF' }]}>Cebu</Text>
-        <Text style={[styles.title, { fontSize: titleSize, color: '#000000' }]}>X</Text>
-        <Text style={[styles.title, { fontSize: titleSize, color: '#FFFFFF' }]}>plore</Text>
-      </View>
+      <Text style={[styles.title, { fontSize: titleSize }]}>CebuXplore</Text>
       <Text style={[styles.subtitle, { fontSize: subtitleSize }]}>Discover Paradise</Text>
     </View>
   );
@@ -45,16 +41,13 @@ const getStyles = (colors) => StyleSheet.create({
     bottom: -5,
     right: -15,
   },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   title: {
     fontWeight: 'bold',
+    color: colors.text,
     letterSpacing: 1,
   },
   subtitle: {
-    color: '#FFFFFF',
+    color: colors.primary,
     letterSpacing: 2,
     marginTop: 5,
   },

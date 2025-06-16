@@ -84,7 +84,10 @@ function AppNavigatorContent() {
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}
-          options={{ headerShown: false }}
+          options={{ 
+            headerShown: false,
+            title: 'Settings',
+          }}
         />
 
         <Stack.Screen
