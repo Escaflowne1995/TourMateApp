@@ -17,8 +17,8 @@ const { height } = Dimensions.get('window');
 // Beautiful Cebu tourism images for auth backgrounds
 const authBackgrounds = [
   require('../../../assets/images/kawasan-falls.jpg'),
-  require('../../../assets/images/moalboal.jpg'),
-  require('../../../assets/images/bantayan.jpg'),
+  // require('../../../assets/images/moalboal.jpg'),
+  // require('../../../assets/images/bantayan.jpg'),
 ];
 
 const AuthScreenLayout = ({ 
@@ -41,8 +41,8 @@ const AuthScreenLayout = ({
         {/* Premium gradient overlay for readability */}
         <LinearGradient
           colors={[
-            'rgba(0, 0, 0, 0.4)',
-            'rgba(0, 0, 0, 0.6)',
+            'rgba(215, 48, 31, 0.6)',
+            'rgba(252, 141, 89, 0.7)',
             'rgba(0, 0, 0, 0.8)'
           ]}
           style={styles.gradientOverlay}

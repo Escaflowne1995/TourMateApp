@@ -177,6 +177,9 @@ const FavoriteSpotsScreen = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back" size={24} color={colors.primary} />
+      </TouchableOpacity>
       <View 
         style={styles.content}
         accessible={true}
@@ -218,6 +221,20 @@ const FavoriteSpotsScreen = ({ navigation }) => {
 const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 55,
+    left: 30,
+    zIndex: 10,
+    backgroundColor: colors.cardBackground,
+    padding: 8,
+    borderRadius: 25,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
   },
   content: {
     flex: 1,
