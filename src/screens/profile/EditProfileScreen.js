@@ -204,21 +204,10 @@ const EditProfileScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView 
-        style={styles.scrollView}
-        accessible={true}
-        accessibilityLabel="Edit Profile Screen"
-      >
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.avatarContainer}
-            onPress={handleChangeAvatar}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel="Change profile picture"
-            accessibilityHint="Tap to change your profile picture"
-          >
+    <View style={[styles.container, { backgroundColor: '#fff' }]}>
+      <ScrollView style={styles.scrollView} accessible={true} accessibilityLabel="Edit Profile Screen">
+        <View style={styles.profileImageSection}>
+          <TouchableOpacity onPress={handleChangeAvatar} style={styles.avatarContainer}>
             <Image
               source={{ uri: profileData.avatar }}
               style={styles.avatar}
@@ -226,68 +215,77 @@ const EditProfileScreen = ({ navigation, route }) => {
               accessibilityRole="image"
               accessibilityLabel={`Current profile picture of ${profileData.name}`}
             />
-            <View style={styles.cameraIcon}>
-              <Ionicons name="camera" size={20} color="#fff" accessible={false} />
-            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleChangeAvatar}>
+            <Text style={styles.uploadPhotoText}>Upload Photo</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Full Name</Text>
-            <TextInput
-              style={styles.input}
-              value={profileData.name}
-              onChangeText={(text) => setProfileData({...profileData, name: text})}
-              placeholder="Enter your full name"
-              accessible={true}
-              accessibilityLabel="Full Name"
-              accessibilityHint="Enter your full name"
-            />
+        <View style={styles.formFlat}>
+          <Text style={styles.labelFlat}>Name</Text>
+          <TextInput
+            style={styles.inputFlat}
+            value={profileData.name}
+            onChangeText={(text) => setProfileData({...profileData, name: text})}
+            placeholder="Enter your full name"
+          />
+          <View style={styles.row2col}>
+            <View style={styles.col2}>
+              <Text style={styles.labelFlat}>Birth Date</Text>
+              <TextInput
+                style={styles.inputFlat}
+                value={profileData.birthDate || ''}
+                onChangeText={(text) => setProfileData({...profileData, birthDate: text})}
+                placeholder="MM/DD/YYYY"
+              />
+            </View>
+            <View style={styles.col2}>
+              <Text style={styles.labelFlat}>Gender</Text>
+              <TextInput
+                style={styles.inputFlat}
+                value={profileData.gender || ''}
+                onChangeText={(text) => setProfileData({...profileData, gender: text})}
+                placeholder="Gender"
+              />
+            </View>
           </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              value={profileData.email}
-              onChangeText={(text) => setProfileData({...profileData, email: text})}
-              placeholder="Enter your email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              accessible={true}
-              accessibilityLabel="Email Address"
-              accessibilityHint="Enter your email address"
-            />
+          <Text style={styles.labelFlat}>Email</Text>
+          <TextInput
+            style={styles.inputFlat}
+            value={profileData.email}
+            onChangeText={(text) => setProfileData({...profileData, email: text})}
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <Text style={styles.labelFlat}>Mobile</Text>
+          <TextInput
+            style={styles.inputFlat}
+            value={profileData.phone}
+            onChangeText={(text) => setProfileData({...profileData, phone: text})}
+            placeholder="Enter your phone number"
+            keyboardType="phone-pad"
+          />
+          <View style={styles.row2col}>
+            <View style={styles.col2}>
+              <Text style={styles.labelFlat}>Country</Text>
+              <TextInput
+                style={styles.inputFlat}
+                value={profileData.country || ''}
+                onChangeText={(text) => setProfileData({...profileData, country: text})}
+                placeholder="Country"
+              />
+            </View>
+            <View style={styles.col2}>
+              <Text style={styles.labelFlat}>Zip Code</Text>
+              <TextInput
+                style={styles.inputFlat}
+                value={profileData.zipCode || ''}
+                onChangeText={(text) => setProfileData({...profileData, zipCode: text})}
+                placeholder="Zip Code"
+                keyboardType="numeric"
+              />
+            </View>
           </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Phone Number</Text>
-            <TextInput
-              style={styles.input}
-              value={profileData.phone}
-              onChangeText={(text) => setProfileData({...profileData, phone: text})}
-              placeholder="Enter your phone number"
-              keyboardType="phone-pad"
-              accessible={true}
-              accessibilityLabel="Phone Number"
-              accessibilityHint="Enter your phone number"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Location</Text>
-            <TextInput
-              style={styles.input}
-              value={profileData.location}
-              onChangeText={(text) => setProfileData({...profileData, location: text})}
-              placeholder="Enter your location"
-              accessible={true}
-              accessibilityLabel="Location"
-              accessibilityHint="Enter your current location"
-            />
-          </View>
-
           <TouchableOpacity
             style={styles.saveButton}
             onPress={handleSave}
@@ -298,20 +296,7 @@ const EditProfileScreen = ({ navigation, route }) => {
             accessibilityHint="Save your profile changes"
             accessibilityState={{ disabled: isLoading }}
           >
-            <LinearGradient
-              colors={[colors.primary, colors.primaryDark]}
-              style={styles.buttonGradient}
-            >
-              {isLoading ? (
-                <ActivityIndicator 
-                  color="#fff" 
-                  accessible={true}
-                  accessibilityLabel="Saving changes, please wait"
-                />
-              ) : (
-                <Text style={styles.saveButtonText}>Save Changes</Text>
-              )}
-            </LinearGradient>
+            <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -327,92 +312,87 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     backgroundColor: 'transparent',
     flex: 1,
   },
-  header: {
+  topBarSaveOnly: {
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
-    marginHorizontal: 15,
-    marginTop: 20,
-    borderRadius: 15,
-    backgroundColor: colors.cardBackground,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    justifyContent: 'flex-end',
+    paddingTop: 40,
+    paddingHorizontal: 18,
+    paddingBottom: 10,
+    backgroundColor: '#fff',
   },
-  form: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
+  saveButtonTop: {
+    padding: 4,
+  },
+  saveButtonTopText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#377DFF',
+  },
+  profileImageSection: {
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 30,
   },
   avatarContainer: {
     position: 'relative',
   },
   avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 3,
-    borderColor: colors.border,
-  },
-  cameraIcon: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: colors.primary,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 110,
+    height: 110,
+    borderRadius: 55,
     borderWidth: 2,
-    borderColor: colors.cardBackground,
+    borderColor: '#eee',
   },
-  form: {
-    paddingHorizontal: 20,
+  uploadPhotoText: {
+    color: '#377DFF',
+    fontWeight: '600',
+    fontSize: 16,
+    marginTop: 10,
+  },
+  formFlat: {
+    paddingHorizontal: 18,
     paddingBottom: 30,
   },
-  inputGroup: {
-    marginBottom: 20,
+  labelFlat: {
+    fontSize: 15,
+    color: '#888',
+    marginBottom: 2,
+    marginTop: 18,
+    fontWeight: '500',
   },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 10,
-    marginLeft: 5,
+  inputFlat: {
+    fontSize: 18,
+    color: '#222',
+    fontWeight: '700',
+    backgroundColor: '#fff',
+    borderWidth: 0,
+    borderBottomWidth: 1.5,
+    borderColor: '#eee',
+    borderRadius: 0,
+    paddingVertical: 8,
+    marginBottom: 2,
   },
-  input: {
-    backgroundColor: colors.inputBackground,
-    borderRadius: 15,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    fontSize: 16,
-    color: colors.text,
-    minHeight: 50,
-    borderWidth: 1,
-    borderColor: colors.border,
+  row2col: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  col2: {
+    flex: 1,
+    marginRight: 10,
   },
   saveButton: {
-    borderRadius: 25,
-    overflow: 'hidden',
-    marginTop: 20,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    backgroundColor: colors.primary,
-  },
-  buttonGradient: {
-    padding: 18,
+    padding: 16,
+    backgroundColor: '#377DFF',
+    borderRadius: 8,
     alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 56,
+    marginTop: 24,
   },
   saveButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
 });
 

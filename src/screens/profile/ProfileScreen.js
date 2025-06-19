@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  ImageBackground,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -207,82 +208,54 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
         refreshing={isRefreshing}
         onRefresh={loadCounts}
       >
-        {/* Premium Profile Header with Gradient */}
-        <LinearGradient
-          colors={[colors.primary, colors.secondary, colors.tertiary]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.headerGradient}
-        >
-          <View style={styles.profileHeader}>
-            <View style={styles.avatarContainer}>
-              <Image 
+        {/* Profile Header with Background Image */}
+        <View style={styles.headerWrapper}>
+          <ImageBackground
+            source={require('../../../assets/images/profile-background.jpg')}
+            style={styles.headerBg}
+            imageStyle={styles.headerBgImage}
+          >
+            <View style={styles.profileInfo}>
+              <Image
                 source={{ 
                   uri: currentUserData.avatar && currentUserData.avatar.startsWith('data:image') 
                     ? currentUserData.avatar 
                     : userProfile.avatar 
-                }} 
-                style={styles.avatar} 
+                }}
+                style={styles.profilePic}
               />
-            </View>
-            <Text style={styles.userName}>{userProfile.name}</Text>
-            <Text style={styles.userEmail}>{userProfile.email}</Text>
-            
-            {/* Premium Stats Cards */}
-            <View style={styles.statsContainer}>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>{userProfile.favoriteSpots}</Text>
-                <Text style={styles.statLabel}>Favorite Spots</Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>{userProfile.reviews}</Text>
-                <Text style={styles.statLabel}>Reviews</Text>
+              <Text style={styles.profileName}>{userProfile.name}</Text>
+              <View style={styles.statsContainer}>
+                <View style={styles.statCard}>
+                  <Text style={styles.statNumber}>{userProfile.favoriteSpots}</Text>
+                  <Text style={styles.statLabel}>Favorite Spots</Text>
+                </View>
+                <View style={styles.statCard}>
+                  <Text style={styles.statNumber}>{userProfile.reviews}</Text>
+                  <Text style={styles.statLabel}>Reviews</Text>
+                </View>
               </View>
             </View>
-          </View>
-        </LinearGradient>
+          </ImageBackground>
+        </View>
 
-        {/* Premium Menu Items */}
-        <View style={styles.menuContainer}>
-          {menuItems.map((item) => (
+        {/* Card Section for Menu Items */}
+        <View style={styles.card}>
+          {menuItems.map((item, idx) => (
             <TouchableOpacity
               key={item.id}
-              style={styles.menuItem}
+              style={[styles.row, idx === menuItems.length - 1 && { borderBottomWidth: 0 }]}
               onPress={item.action}
               activeOpacity={0.8}
               accessible={true}
               accessibilityLabel={item.accessibilityLabel}
               accessibilityHint={item.accessibilityHint}
             >
-              <View style={styles.menuIconContainer}>
-                <Ionicons name={item.icon} size={24} color={colors.primary} />
-              </View>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                {item.value && (
-                  <Text style={styles.menuValue}>{item.value}</Text>
-                )}
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
+              <Ionicons name={item.icon} size={22} color="#888" style={styles.rowIcon} />
+              <Text style={styles.rowLabel}>{item.title}</Text>
+              <Ionicons name="chevron-forward" size={20} color="#bbb" />
             </TouchableOpacity>
           ))}
-          
-          {/* Premium Logout Button */}
-          <TouchableOpacity
-            style={styles.logoutButton}
-            onPress={handleLogout}
-            disabled={isLoading}
-            activeOpacity={0.8}
-          >
-            {isLoading ? (
-              <ActivityIndicator size="small" color="#FFF" />
-            ) : (
-              <>
-                <Ionicons name="log-out-outline" size={24} color="#FFF" />
-                <Text style={styles.logoutText}>Logout</Text>
-              </>
-            )}
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -300,117 +273,89 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
   scrollContent: {
     paddingBottom: 20,
   },
-  headerGradient: {
-    paddingTop: 60,
-    paddingBottom: 30,
-    paddingHorizontal: 20,
-    marginBottom: 20,
+  headerWrapper: {
+    marginBottom: 10,
   },
-  profileHeader: {
+  headerBg: {
+    height: 300,
+    justifyContent: 'flex-end',
+  },
+  headerBgImage: {
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  profileInfo: {
     alignItems: 'center',
+    paddingTop: 40,
   },
-  avatarContainer: {
-    position: 'relative',
-    marginBottom: 16,
+  profilePic: {
+    width: 150,
+    height: 150,
+    borderRadius: 100,
+    borderWidth: 3,
+    borderColor: '#fff',
+    marginBottom: 10,
   },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 4,
-    borderColor: '#FFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  userName: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#FFF',
-    marginBottom: 4,
-    textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  userEmail: {
-    fontSize: 16,
-    color: '#FFF',
-    opacity: 0.9,
-    textAlign: 'center',
-    marginBottom: 20,
+  profileName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    width: '100%',
-    paddingHorizontal: 20,
+    marginTop: 12,
+    marginBottom: 10,
+    paddingHorizontal: 30,
   },
   statCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 16,
-    padding: 16,
+    flex: 1,
+    minWidth: 0,
+    alignSelf: 'stretch',
     alignItems: 'center',
-    minWidth: 100,
-    backdropFilter: 'blur(10px)',
-  },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#FFF',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#FFF',
-    opacity: 0.9,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  menuContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  menuItem: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    marginHorizontal: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  statNumber: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#222',
+  },
+  statLabel: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 2,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    marginHorizontal: 18,
+    marginTop: 24,
+    paddingVertical: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
     elevation: 3,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
-  menuIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.primary + '20',
+  row: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
   },
-  menuContent: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  menuTitle: {
-    fontSize: 16,
-    color: colors.text,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  menuValue: {
-    fontSize: 14,
-    color: colors.primary,
-    fontWeight: '500',
-  },
+  rowIcon: { marginRight: 16 },
+  rowLabel: { flex: 1, fontSize: 16, color: '#222' },
   logoutButton: {
     backgroundColor: colors.error,
     borderRadius: 16,
