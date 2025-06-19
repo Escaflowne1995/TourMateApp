@@ -28,7 +28,7 @@ const Login = ({ navigation }) => {
   }, []);
 
   return (
-    <AuthScreenLayout colors={colors} backgroundIndex={0}>
+    <AuthScreenLayout colors={colors} backgroundIndex={0} extraPaddingBottom={80}>
       <LoginForm
         validationSchema={validationSchema}
         onSubmit={handleLogin}

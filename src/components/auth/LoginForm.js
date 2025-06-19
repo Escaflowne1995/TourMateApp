@@ -27,7 +27,7 @@ const LoginForm = ({
       {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
         <View style={styles.formContainer}>
           {/* Email Input */}
-          <View style={styles.inputContainer}>
+          <View style={styles.firstInputContainer}>
             <Text style={styles.inputLabel}>Email</Text>
             <EmailInputWithHistory
               style={[styles.input, { 

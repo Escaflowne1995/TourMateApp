@@ -6,9 +6,14 @@ export const getLoginStyles = (colors, isDarkMode) => StyleSheet.create({
     width: '100%',
     paddingHorizontal: 0,
     zIndex: 1,
+    marginTop: 60,
   },
   inputContainer: {
     marginBottom: 20,
+    zIndex: 1,
+  },
+  firstInputContainer: {
+    marginBottom: 30,
     zIndex: 1,
   },
   inputLabel: {
@@ -49,7 +54,7 @@ export const getLoginStyles = (colors, isDarkMode) => StyleSheet.create({
   },
   forgotPassword: {
     alignSelf: 'flex-end',
-    marginBottom: 24,
+    marginBottom: 12,
   },
   forgotPasswordText: {
     fontSize: 14,
@@ -64,7 +69,7 @@ export const getLoginStyles = (colors, isDarkMode) => StyleSheet.create({
     paddingVertical: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

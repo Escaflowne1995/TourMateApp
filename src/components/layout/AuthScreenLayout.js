@@ -97,7 +97,7 @@ const getStyles = (colors, extraPaddingBottom) => StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     paddingHorizontal: 24,
     paddingVertical: 60,
     minHeight: height,
@@ -105,7 +105,7 @@ const getStyles = (colors, extraPaddingBottom) => StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 40,
     marginTop: 15,
   },
 });

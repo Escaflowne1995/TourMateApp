@@ -47,25 +47,34 @@ const HomeScreen = ({ navigation, route, userData: userDataProp }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Premium Welcome Header with Gradient */}
-        <LinearGradient
-          colors={[colors.primary, colors.secondary]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.welcomeGradient}
-        >
-          <View style={styles.welcomeContainer}>
-            <Text style={styles.welcomeTitle}>
-              🏝️ Discover Cebu
-            </Text>
-            <Text style={styles.welcomeSubtitle}>
-              Your gateway to paradise
-            </Text>
-            <Text style={styles.welcomeDescription}>
-              Explore pristine beaches, rich culture, and unforgettable experiences in the Queen City of the South
-            </Text>
-          </View>
-        </LinearGradient>
+        {/* Greeting at the top */}
+        {/* Full Screen Welcome Section */}
+        <View style={styles.fullScreenWelcomeWrapper}>
+          <ImageBackground
+            source={require('../../../assets/images/kawasan-falls.jpg')}
+            style={styles.welcomeBackground}
+            resizeMode="cover"
+          >
+            <LinearGradient
+              colors={['rgba(0, 0, 0, 0.3)', 'rgba(0, 0, 0, 0.7)']}
+              style={styles.welcomeGradient}
+            >
+              <View style={styles.welcomeContainer}>
+                <View style={styles.welcomeBadge}>
+                  <Text style={styles.welcomeBadgeText}>🏝️</Text>
+                </View>
+                <Text style={styles.welcomeTitle}>Discover Cebu</Text>
+                <Text style={styles.welcomeSubtitle}>Your gateway to paradise</Text>
+                <View style={styles.welcomeDescriptionContainer}>
+                  <Text style={styles.welcomeDescription}>
+                    Explore pristine beaches, rich culture, and unforgettable experiences in the Queen City of the South
+                  </Text>
+                </View>
+                
+              </View>
+            </LinearGradient>
+          </ImageBackground>
+        </View>
 
         {/* Content Sections with Enhanced Spacing */}
         <View style={styles.contentContainer}>
@@ -113,41 +122,76 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
   scrollContent: {
     paddingBottom: 20,
   },
+  welcomeBackground: {
+    flex: 1,
+  },
   welcomeGradient: {
-    paddingTop: 60,
-    paddingBottom: 40,
+    height: 650,
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 20,
   },
   welcomeContainer: {
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
     textAlign: 'center',
+    width: '100%',
+  },
+  welcomeBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 50,
+    padding: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  welcomeBadgeText: {
+    fontSize: 28,
+    fontWeight: '900',
   },
   welcomeTitle: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: 8,
-    textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  welcomeSubtitle: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 36,
+    fontWeight: '900',
     color: '#FFFFFF',
     marginBottom: 12,
     textAlign: 'center',
+    alignSelf: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 6,
+    letterSpacing: 1,
+    width: '100%',
+  },
+  welcomeSubtitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginBottom: 16,
+    textAlign: 'center',
     opacity: 0.95,
+    letterSpacing: 0.5,
+  },
+  welcomeDescriptionContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 16,
+    padding: 24,
+    marginHorizontal: 20,
+    marginTop: 8,
+    backdropFilter: 'blur(10px)',
   },
   welcomeDescription: {
     fontSize: 16,
     color: '#FFFFFF',
-    lineHeight: 24,
+    lineHeight: 26,
     textAlign: 'center',
-    opacity: 0.9,
-    maxWidth: 300,
-    fontWeight: '400',
+    opacity: 0.95,
+    maxWidth: 320,
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
   contentContainer: {
     paddingTop: 20,
@@ -158,6 +202,39 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     fontSize: 18,
     color: colors.textSecondary,
     fontWeight: '500',
+  },
+  scrollIndicator: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scrollIndicatorText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 8,
+    opacity: 0.9,
+    letterSpacing: 0.5,
+  },
+  scrollIndicatorIcon: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    opacity: 0.8,
+  },
+  greetingContainer: {
+    padding: 20,
+  },
+  greetingText: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  fullScreenWelcomeWrapper: {
+    flex: 1,
   },
 });
 
