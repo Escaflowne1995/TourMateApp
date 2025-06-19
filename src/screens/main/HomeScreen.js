@@ -67,7 +67,7 @@ const HomeScreen = ({ navigation, route, userData: userDataProp }) => {
                 <Text style={styles.welcomeSubtitle}>Your gateway to paradise</Text>
                 <View style={styles.welcomeDescriptionContainer}>
                   <Text style={styles.welcomeDescription}>
-                    Explore pristine beaches, rich culture, and unforgettable experiences in the Queen City of the South
+                    Discover the breathtaking beauty of Cebu's pristine beaches. Immerse yourself in vibrant culture, unique adventures, and warm hospitality. In the Queen City of the South, every moment is a journey worth cherishing.
                   </Text>
                 </View>
                 
@@ -112,10 +112,7 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
   container: {
     flex: 1,
   },
-  centered: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   scrollView: {
     flex: 1,
   },
@@ -135,7 +132,7 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    textAlign: 'center',
+    textAlign: 'justify',
     width: '100%',
   },
   welcomeBadge: {
@@ -154,10 +151,10 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     fontWeight: '900',
   },
   welcomeTitle: {
-    fontSize: 36,
+    fontSize: 40,
     fontWeight: '900',
     color: '#FFFFFF',
-    marginBottom: 12,
+    marginBottom: 6,
     textAlign: 'center',
     alignSelf: 'center',
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
@@ -167,31 +164,32 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     width: '100%',
   },
   welcomeSubtitle: {
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 16,
+    marginBottom: 1,
     textAlign: 'center',
     opacity: 0.95,
     letterSpacing: 0.5,
   },
   welcomeDescriptionContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'transparent',
     borderRadius: 16,
-    padding: 24,
-    marginHorizontal: 20,
+    padding: 28,
+    marginHorizontal: 2,
     marginTop: 8,
     backdropFilter: 'blur(10px)',
   },
   welcomeDescription: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#FFFFFF',
-    lineHeight: 26,
+    lineHeight: 28,
     textAlign: 'center',
-    opacity: 0.95,
-    maxWidth: 320,
-    fontWeight: '500',
-    letterSpacing: 0.3,
+    justifyContent: 'center',
+    opacity: 0.98,
+    Width: 400,
+    fontWeight: '400',
+    letterSpacing: 0.2,
   },
   contentContainer: {
     paddingTop: 20,
