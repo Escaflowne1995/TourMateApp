@@ -59,41 +59,38 @@ function AppNavigatorContent() {
         <Stack.Screen
           name="EditProfile"
           component={EditProfileScreen}
-          options={{ headerShown: false }}
+          options={getHeaderOptions('Edit Profile')}
         />
         <Stack.Screen
           name="FavoriteSpots"
           component={FavoriteSpotsScreen}
-          options={{ headerShown: false }}
+          options={getHeaderOptions('Favorite Cebu Spots')}
         />
         <Stack.Screen
           name="MyReviews"
           component={MyReviewsScreen}
-          options={{ headerShown: false }}
+          options={getHeaderOptions('My Reviews')}
         />
         <Stack.Screen
           name="TravelHistory"
           component={TravelHistoryScreen}
-          options={{ headerShown: false }}
+          options={getHeaderOptions('Travel History')}
         />
         <Stack.Screen
           name="Language"
           component={LanguageScreen}
-          options={{ headerShown: false }}
+          options={getHeaderOptions('Language')}
         />
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}
-          options={{ 
-            headerShown: false,
-            title: 'Settings',
-          }}
+          options={getHeaderOptions('Settings')}
         />
 
         <Stack.Screen
           name="HelpSupport"
           component={HelpSupportScreen}
-          options={{ headerShown: false }}
+          options={getHeaderOptions('Help & Support')}
         />
       </Stack.Navigator>
   );

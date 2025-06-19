@@ -1,52 +1,55 @@
-// useLoginLogic.js - Custom hook for login state and logic (SRP + DIP)
-import { useState, useMemo, useEffect } from 'react';
-import ValidationService from '../services/validation/ValidationService';
-import SecurityService from '../services/security/SecurityService';
-import LoginController from '../controllers/LoginController';
-import AsyncStorageTest from '../utils/debug/AsyncStorageTest';
+import { useState, useMemo } from 'react';
+import { Alert } from 'react-native';
+import * as Yup from 'yup';
+import { auth } from '../services/firebase/firebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
 import FirebaseEmailHistoryService from '../services/storage/FirebaseEmailHistoryService';
 import EmailHistoryService from '../services/storage/EmailHistoryService';
+import LoginController from '../controllers/LoginController';
+import SecurityService from '../services/security/SecurityService';
 
 const useLoginLogic = (navigation) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Dependency Injection - Services injected through useMemo
   const securityService = useMemo(() => new SecurityService(5), []);
   const loginController = useMemo(() => new LoginController(securityService), [securityService]);
-  const validationSchema = useMemo(() => ValidationService.getLoginValidationSchema(), []);
 
-  // Debug AsyncStorage on component mount
-  useEffect(() => {
-    AsyncStorageTest.debugAsyncStorage();
-  }, []);
+  const validationSchema = Yup.object().shape({
+    email: Yup.string().email('Invalid email').required('Email is required'),
+    password: Yup.string().min(6, 'Password too short').required('Password is required'),
+  });
 
   const handleLogin = async (values) => {
+    const { email, password } = values;
+
+    if (!email || !password) {
+      Alert.alert("Input Error", "Email and password must not be empty.");
+      return;
+    }
+
     setIsLoading(true);
-    
+
     try {
-      // Attempt login
-      await loginController.handleLogin(values.email, values.password, navigation);
-      
-      // Save successful login email to history with fallback
+      await loginController.handleLogin(email.trim(), password, navigation);
+
       try {
-        await FirebaseEmailHistoryService.addEmail(values.email);
-        console.log('Email saved to Firebase history');
-      } catch (emailSaveError) {
-        console.warn('Could not save email to Firebase, falling back to AsyncStorage:', emailSaveError.message);
-        // Fallback to AsyncStorage if Firebase fails
+        await FirebaseEmailHistoryService.addEmail(email);
+      } catch {
         try {
-          await EmailHistoryService.saveEmail(values.email);
-          console.log('Email saved to AsyncStorage history as fallback');
-        } catch (asyncStorageError) {
-          console.error('Failed to save email to both Firebase and AsyncStorage:', asyncStorageError);
-          // Don't fail the login if email saving fails completely
+          await EmailHistoryService.saveEmail(email);
+        } catch {
+          // Fallback failed silently
         }
       }
-      
-    } catch (loginError) {
-      console.error('Login failed:', loginError);
-      throw loginError; // Re-throw to handle in UI
+
+    } catch (error) {
+      if (error.code === 'auth/invalid-credential') {
+        Alert.alert("Login Failed", "Invalid email or password.");
+      } else {
+        Alert.alert("Login Error", "Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -55,13 +58,13 @@ const useLoginLogic = (navigation) => {
   const canSubmit = securityService.canAttemptLogin();
 
   return {
+    handleLogin,
     showPassword,
     setShowPassword,
     isLoading,
     validationSchema,
-    handleLogin,
-    canSubmit
+    canSubmit,
   };
 };
 
-export default useLoginLogic; 
+export default useLoginLogic;

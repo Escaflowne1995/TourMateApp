@@ -15,7 +15,9 @@ import { getThemeColors } from '../../utils/theme';
 const LandingScreen = ({ navigation }) => {
   const { isDarkMode } = useTheme();
   const colors = getThemeColors(isDarkMode);
-  const styles = getStyles(colors, isDarkMode);
+  
+  // Memoize styles to prevent recreation on every render
+  const styles = React.useMemo(() => getStyles(colors, isDarkMode), [colors, isDarkMode]);
 
   return (
     <AuthScreenLayout colors={colors} backgroundIndex={2} showLogo={true}>
@@ -49,10 +51,11 @@ const LandingScreen = ({ navigation }) => {
             style={styles.button}
             onPress={() => navigation.navigate('Login')}
           >
-            <LinearGradient
-              colors={[colors.primary, colors.secondary]}
-              style={styles.buttonGradient}
-            >
+                    <LinearGradient
+          colors={[colors.primary, colors.secondary]}
+          style={styles.buttonGradient}
+          useAngle={false}
+        >
               <Text style={styles.buttonText}>Get Started</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -109,11 +112,12 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     borderRadius: 15,
     padding: 20,
     marginBottom: 15,
+    // Simplified shadow for better performance
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 4,
   },
   featureText: {
     color: '#2C3E50',
@@ -128,11 +132,12 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     borderRadius: 25,
     overflow: 'hidden',
     marginBottom: 15,
-    elevation: 6,
+    // Reduced shadow for better performance
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
   },
   buttonGradient: {
     paddingVertical: 18,

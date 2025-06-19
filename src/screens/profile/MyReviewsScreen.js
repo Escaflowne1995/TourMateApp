@@ -281,7 +281,7 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
   header: {
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 50,
+    marginTop: 20,
     borderRadius: 15,
     backgroundColor: colors.cardBackground,
     shadowColor: '#000',

@@ -28,8 +28,14 @@ const AuthScreenLayout = ({
   extraPaddingBottom = 120,
   backgroundIndex = 0
 }) => {
-  const styles = getStyles(colors, extraPaddingBottom);
-  const backgroundImage = authBackgrounds[backgroundIndex % authBackgrounds.length];
+  // Memoize styles to prevent recreation
+  const styles = React.useMemo(() => getStyles(colors, extraPaddingBottom), [colors, extraPaddingBottom]);
+  
+  // Memoize background image selection
+  const backgroundImage = React.useMemo(() => 
+    authBackgrounds[backgroundIndex % authBackgrounds.length], 
+    [backgroundIndex]
+  );
 
   return (
     <View style={styles.container}>
@@ -37,6 +43,8 @@ const AuthScreenLayout = ({
         source={backgroundImage}
         style={styles.backgroundImage}
         resizeMode="cover"
+        fadeDuration={0}
+        loadingIndicatorSource={null}
       >
         {/* Premium gradient overlay for readability */}
         <LinearGradient
@@ -97,7 +105,7 @@ const getStyles = (colors, extraPaddingBottom) => StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 10,
     marginTop: 15,
   },
 });

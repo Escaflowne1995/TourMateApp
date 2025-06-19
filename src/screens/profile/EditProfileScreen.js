@@ -210,113 +210,111 @@ const EditProfileScreen = ({ navigation, route }) => {
         accessible={true}
         accessibilityLabel="Edit Profile Screen"
       >
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.avatarContainer}
-          onPress={handleChangeAvatar}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Change profile picture"
-          accessibilityHint="Tap to change your profile picture"
-        >
-          <Image
-            source={{ uri: profileData.avatar }}
-            style={styles.avatar}
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.avatarContainer}
+            onPress={handleChangeAvatar}
             accessible={true}
-            accessibilityRole="image"
-            accessibilityLabel={`Current profile picture of ${profileData.name}`}
-          />
-          <View style={styles.cameraIcon}>
-            <Ionicons name="camera" size={20} color="#fff" accessible={false} />
-          </View>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.form}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput
-            style={styles.input}
-            value={profileData.name}
-            onChangeText={(text) => setProfileData({...profileData, name: text})}
-            placeholder="Enter your full name"
-            accessible={true}
-            accessibilityLabel="Full Name"
-            accessibilityHint="Enter your full name"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={profileData.email}
-            onChangeText={(text) => setProfileData({...profileData, email: text})}
-            placeholder="Enter your email"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            accessible={true}
-            accessibilityLabel="Email Address"
-            accessibilityHint="Enter your email address"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={styles.input}
-            value={profileData.phone}
-            onChangeText={(text) => setProfileData({...profileData, phone: text})}
-            placeholder="Enter your phone number"
-            keyboardType="phone-pad"
-            accessible={true}
-            accessibilityLabel="Phone Number"
-            accessibilityHint="Enter your phone number"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Location</Text>
-          <TextInput
-            style={styles.input}
-            value={profileData.location}
-            onChangeText={(text) => setProfileData({...profileData, location: text})}
-            placeholder="Enter your location"
-            accessible={true}
-            accessibilityLabel="Location"
-            accessibilityHint="Enter your current location"
-          />
-        </View>
-
-
-
-        <TouchableOpacity
-          style={styles.saveButton}
-          onPress={handleSave}
-          disabled={isLoading}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel="Save Changes"
-          accessibilityHint="Save your profile changes"
-          accessibilityState={{ disabled: isLoading }}
-        >
-          <LinearGradient
-            colors={[colors.primary, colors.primaryDark]}
-            style={styles.buttonGradient}
+            accessibilityRole="button"
+            accessibilityLabel="Change profile picture"
+            accessibilityHint="Tap to change your profile picture"
           >
-            {isLoading ? (
-              <ActivityIndicator 
-                color="#fff" 
-                accessible={true}
-                accessibilityLabel="Saving changes, please wait"
-              />
-            ) : (
-              <Text style={styles.saveButtonText}>Save Changes</Text>
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+            <Image
+              source={{ uri: profileData.avatar }}
+              style={styles.avatar}
+              accessible={true}
+              accessibilityRole="image"
+              accessibilityLabel={`Current profile picture of ${profileData.name}`}
+            />
+            <View style={styles.cameraIcon}>
+              <Ionicons name="camera" size={20} color="#fff" accessible={false} />
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.form}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Full Name</Text>
+            <TextInput
+              style={styles.input}
+              value={profileData.name}
+              onChangeText={(text) => setProfileData({...profileData, name: text})}
+              placeholder="Enter your full name"
+              accessible={true}
+              accessibilityLabel="Full Name"
+              accessibilityHint="Enter your full name"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              value={profileData.email}
+              onChangeText={(text) => setProfileData({...profileData, email: text})}
+              placeholder="Enter your email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              accessible={true}
+              accessibilityLabel="Email Address"
+              accessibilityHint="Enter your email address"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Phone Number</Text>
+            <TextInput
+              style={styles.input}
+              value={profileData.phone}
+              onChangeText={(text) => setProfileData({...profileData, phone: text})}
+              placeholder="Enter your phone number"
+              keyboardType="phone-pad"
+              accessible={true}
+              accessibilityLabel="Phone Number"
+              accessibilityHint="Enter your phone number"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Location</Text>
+            <TextInput
+              style={styles.input}
+              value={profileData.location}
+              onChangeText={(text) => setProfileData({...profileData, location: text})}
+              placeholder="Enter your location"
+              accessible={true}
+              accessibilityLabel="Location"
+              accessibilityHint="Enter your current location"
+            />
+          </View>
+
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={handleSave}
+            disabled={isLoading}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Save Changes"
+            accessibilityHint="Save your profile changes"
+            accessibilityState={{ disabled: isLoading }}
+          >
+            <LinearGradient
+              colors={[colors.primary, colors.primaryDark]}
+              style={styles.buttonGradient}
+            >
+              {isLoading ? (
+                <ActivityIndicator 
+                  color="#fff" 
+                  accessible={true}
+                  accessibilityLabel="Saving changes, please wait"
+                />
+              ) : (
+                <Text style={styles.saveButtonText}>Save Changes</Text>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -333,7 +331,7 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     marginHorizontal: 15,
-    marginTop: 50,
+    marginTop: 20,
     borderRadius: 15,
     backgroundColor: colors.cardBackground,
     shadowColor: '#000',
@@ -341,6 +339,10 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  form: {
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   avatarContainer: {
     position: 'relative',

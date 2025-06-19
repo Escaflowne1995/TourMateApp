@@ -1,55 +1,76 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../contexts/ThemeContext';
-import { getThemeColors } from '../../utils/theme';
 
 const Logo = ({ size = 'normal' }) => {
-  const { isDarkMode } = useTheme();
-  const colors = getThemeColors(isDarkMode);
-  
-  const iconSize = size === 'large' ? 50 : 40;
-  const mapIconSize = size === 'large' ? 40 : 30;
-  const titleSize = size === 'large' ? 36 : 28;
-  const subtitleSize = size === 'large' ? 18 : 16;
+  // Calculate dimensions based on size - making them bigger
+  const iconSize = size === 'large' ? 55 : size === 'small' ? 35 : 45;
+  const titleSize = size === 'large' ? 42 : size === 'small' ? 26 : 34;
+  const subtitleSize = size === 'large' ? 18 : size === 'small' ? 12 : 16;
 
-  const styles = getStyles(colors);
+  const styles = getStyles();
 
   return (
     <View style={styles.container}>
+      {/* Globe Icon to represent travel */}
       <View style={styles.iconContainer}>
-        <Ionicons name="airplane" size={iconSize} color={colors.primary} />
-        <Ionicons name="map" size={mapIconSize} color={colors.text} style={styles.mapIcon} />
+        <Ionicons 
+          name="earth" 
+          size={iconSize} 
+          color="#ff8c42" 
+          style={styles.globeIcon}
+        />
+        <Ionicons 
+          name="airplane" 
+          size={iconSize * 0.6} 
+          color="#ff6b1a" 
+          style={styles.airplaneIcon}
+        />
       </View>
-      <Text style={[styles.title, { fontSize: titleSize }]}>CebuXplore</Text>
-      <Text style={[styles.subtitle, { fontSize: subtitleSize }]}>Discover Paradise</Text>
+      
+      {/* WEGO Text */}
+      <Text style={[styles.title, { fontSize: titleSize }]}>WEGO</Text>
+      <Text style={[styles.subtitle, { fontSize: subtitleSize }]}>Everywhere you go, WEGO!</Text>
     </View>
   );
 };
 
-const getStyles = (colors) => StyleSheet.create({
+const getStyles = () => StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconContainer: {
     position: 'relative',
-    marginBottom: 10,
+    marginBottom: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  mapIcon: {
+  globeIcon: {
+    // Globe in the center
+  },
+  airplaneIcon: {
     position: 'absolute',
-    bottom: -5,
-    right: -15,
+    top: -10,
+    right: -18,
+    transform: [{ rotate: '45deg' }],
   },
   title: {
     fontWeight: 'bold',
-    color: colors.text,
-    letterSpacing: 1,
+    color: '#ff8c42',
+    letterSpacing: 2,
+    textShadowColor: 'rgba(255, 255, 255, 0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   subtitle: {
-    color: colors.primary,
-    letterSpacing: 2,
-    marginTop: 5,
+    color: '#ff6b1a',
+    letterSpacing: 1,
+    marginTop: 3,
+    fontWeight: '500',
+    textShadowColor: 'rgba(255, 255, 255, 0.6)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
   },
 });
 

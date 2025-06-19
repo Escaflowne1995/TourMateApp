@@ -4,121 +4,120 @@ import NavigationService from '../services/navigation/NavigationService';
 import AlertService from '../utils/alert/AlertService';
 import EmailHistoryService from '../services/storage/EmailHistoryService';
 
-// Dependency Inversion: Depends on abstractions (services), not concrete implementations
-// Single Responsibility: Only orchestrates login flow
 class LoginController {
   constructor(securityService) {
-    this.securityService = securityService; // Dependency injection
+    this.securityService = securityService;
   }
 
   async handleLogin(email, password, navigation) {
-    // Check security constraints
     if (!this.securityService.canAttemptLogin()) {
       AlertService.showTooManyAttempts();
       return { success: false };
     }
 
-    console.log('Attempting login with email:', email);
-    
-    // Authenticate user
+    if (__DEV__) {
+      console.log('🔐 Attempting login for:', email);
+    }
+
     const authResult = await AuthService.login(email, password);
-    
+
     if (!authResult.success) {
       this.securityService.incrementAttempts();
       this._handleLoginError(authResult.error, email, navigation);
       return { success: false };
     }
 
-    // Get user data
     const userResult = await UserService.getUserData(authResult.user);
-    
+
     if (!userResult.success) {
       AlertService.showError('Error', 'Failed to load user data');
       return { success: false };
     }
 
-    // Reset security attempts on successful login
     this.securityService.resetAttempts();
-    
-    // Save email to history for future suggestions
-    await EmailHistoryService.saveEmail(email);
-    
-    // Navigate to main app
+
+    try {
+      await EmailHistoryService.saveEmail(email);
+    } catch (e) {
+      if (__DEV__) {
+        console.log('⚠️ Failed to save email history:', e.message);
+      }
+    }
+
     NavigationService.navigateToMainApp(navigation, userResult.userData);
-    
-    console.log('Login successful for user:', userResult.userData.email);
+
+    if (__DEV__) {
+      console.log('✅ Login success:', userResult.userData.email);
+    }
+
     return { success: true, userData: userResult.userData };
   }
 
   _handleLoginError(error, email, navigation) {
-    console.error('Login error:', error);
-    
+    if (__DEV__) {
+      console.log('Login error (dev):', error?.code || error?.message);
+    }
+
     const errorCode = error.code || error.message;
-    
+
     switch (errorCode) {
       case 'auth/user-not-found':
-        console.log('Showing account not found alert for:', email);
-        AlertService.showAccountNotFound(email, (email) => {
+        AlertService.showAccountNotFound(email, () => {
           NavigationService.navigateToSignup(navigation, email);
         });
         break;
+
       case 'auth/invalid-credential':
-        console.log('Showing invalid credentials alert for:', email);
-        // For known corrupted accounts, offer direct recovery
         if (email === 'romeoalbarando115@gmail.com' || email === 'ompadking77@gmail.com') {
           AlertService.showCorruptedAccountRecovery(
             email,
-            (email) => this._handlePasswordReset(email),
-            (email) => this._handleAccountRecreation(email, navigation)
+            () => this._handlePasswordReset(email),
+            () => this._handleAccountRecreation(email, navigation)
           );
         } else {
           AlertService.showInvalidCredentials(
-            email, 
-            (email) => this._handlePasswordReset(email),
-            (email) => NavigationService.navigateToSignup(navigation, email)
+            email,
+            () => this._handlePasswordReset(email),
+            () => NavigationService.navigateToSignup(navigation, email)
           );
         }
         break;
+
       case 'auth/wrong-password':
-        console.log('Showing invalid password alert');
         AlertService.showInvalidPassword();
         break;
+
       case 'auth/too-many-requests':
-        console.log('Showing too many attempts alert');
         AlertService.showTooManyAttempts();
         break;
+
       default:
-        console.log('Showing generic error alert for code:', errorCode);
         const message = AuthService.getErrorMessage(errorCode);
         AlertService.showError('Login Failed', message);
     }
   }
 
   async _handlePasswordReset(email) {
-    console.log('Attempting password reset for:', email);
     const result = await AuthService.resetPassword(email);
-    
     if (result.success) {
-      AlertService.showError('Password Reset', 'Password reset email has been sent to your email address.');
+      AlertService.showError('Password Reset', 'A reset link was sent to your email.');
     } else {
-      AlertService.showError('Reset Failed', 'Failed to send password reset email. Please try again.');
+      AlertService.showError('Reset Failed', 'Could not send password reset email.');
     }
   }
 
   async _handleAccountRecreation(email, navigation) {
-    console.log('Handling account recreation for:', email);
     AlertService.showConfirmation(
       'Recreate Account',
-      'This will create a new account with the same email. Your previous data may be lost. Continue?',
+      'This will create a new account using this email. Continue?',
+      () => NavigationService.navigateToSignup(navigation, email),
       () => {
-        // Navigate to signup with the email pre-filled
-        NavigationService.navigateToSignup(navigation, email);
-      },
-      () => {
-        console.log('Account recreation cancelled');
+        if (__DEV__) {
+          console.log('Account recreation canceled');
+        }
       }
     );
   }
 }
 
-export default LoginController; 
+export default LoginController;

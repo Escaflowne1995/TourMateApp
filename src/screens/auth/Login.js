@@ -11,20 +11,19 @@ const Login = ({ navigation }) => {
   const { isDarkMode } = useTheme();
   const colors = getThemeColors(isDarkMode);
   const styles = getLoginStyles(colors, isDarkMode);
-  
-  // Dependency Injection - All logic separated into custom hook
+
+  // ✅ All login logic is here via custom hook
   const {
     showPassword,
     setShowPassword,
     isLoading,
     validationSchema,
     handleLogin,
-    canSubmit
+    canSubmit,
   } = useLoginLogic(navigation);
 
-  // Debug Firebase on screen load (remove this in production)
   React.useEffect(() => {
-    // Uncomment the next line to run Firebase diagnostics
+    // Uncomment for debugging Firebase
     // FirebaseDebug.runFullDiagnostic();
   }, []);
 
