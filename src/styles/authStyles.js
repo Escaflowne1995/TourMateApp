@@ -9,11 +9,11 @@ export const getLoginStyles = (colors, isDarkMode) => StyleSheet.create({
     marginTop: 60,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 0,
     zIndex: 1,
   },
   firstInputContainer: {
-    marginBottom: 30,
+    marginBottom: 16,
     zIndex: 1,
   },
   inputLabel: {
@@ -54,7 +54,7 @@ export const getLoginStyles = (colors, isDarkMode) => StyleSheet.create({
   },
   forgotPassword: {
     alignSelf: 'flex-end',
-    marginBottom: 12,
+    marginBottom: 24,
   },
   forgotPasswordText: {
     fontSize: 14,
@@ -107,8 +107,7 @@ export const getLoginStyles = (colors, isDarkMode) => StyleSheet.create({
   errorText: {
     color: '#FFCACA',
     fontSize: 13,
-    marginTop: -15,
-    marginBottom: 10,
+    marginTop: 8,
     marginLeft: 4,
     fontWeight: '700',
     textShadowColor: 'rgba(0, 0, 0, 0.7)',

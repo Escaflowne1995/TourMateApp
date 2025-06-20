@@ -226,13 +226,13 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
               />
               <Text style={styles.profileName}>{userProfile.name}</Text>
               <View style={styles.statsContainer}>
-                <View style={styles.statCard}>
-                  <Text style={styles.statNumber}>{userProfile.favoriteSpots}</Text>
-                  <Text style={styles.statLabel}>Favorite Spots</Text>
+                <View style={[styles.statCard, isDarkMode && styles.statCardDark]}>
+                  <Text style={[styles.statNumber, isDarkMode && styles.statNumberDark]}>{userProfile.favoriteSpots}</Text>
+                  <Text style={[styles.statLabel, isDarkMode && styles.statLabelDark]}>Favorite Spots</Text>
                 </View>
-                <View style={styles.statCard}>
-                  <Text style={styles.statNumber}>{userProfile.reviews}</Text>
-                  <Text style={styles.statLabel}>Reviews</Text>
+                <View style={[styles.statCard, isDarkMode && styles.statCardDark]}>
+                  <Text style={[styles.statNumber, isDarkMode && styles.statNumberDark]}>{userProfile.reviews}</Text>
+                  <Text style={[styles.statLabel, isDarkMode && styles.statLabelDark]}>Reviews</Text>
                 </View>
               </View>
             </View>
@@ -240,23 +240,37 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
         </View>
 
         {/* Card Section for Menu Items */}
-        <View style={styles.card}>
+        <View style={[styles.card, isDarkMode && styles.cardDark]}>
           {menuItems.map((item, idx) => (
             <TouchableOpacity
               key={item.id}
-              style={[styles.row, idx === menuItems.length - 1 && { borderBottomWidth: 0 }]}
+              style={[
+                styles.row,
+                isDarkMode && styles.rowDark,
+                idx === menuItems.length - 1 && { borderBottomWidth: 0 }
+              ]}
               onPress={item.action}
               activeOpacity={0.8}
               accessible={true}
               accessibilityLabel={item.accessibilityLabel}
               accessibilityHint={item.accessibilityHint}
             >
-              <Ionicons name={item.icon} size={22} color="#888" style={styles.rowIcon} />
-              <Text style={styles.rowLabel}>{item.title}</Text>
-              <Ionicons name="chevron-forward" size={20} color="#bbb" />
+              <Ionicons name={item.icon} size={22} color={isDarkMode ? colors.primary : '#888'} style={styles.rowIcon} />
+              <Text style={[styles.rowLabel, isDarkMode && styles.rowLabelDark]}>{item.title}</Text>
+              <Ionicons name="chevron-forward" size={20} color={isDarkMode ? colors.primary : '#bbb'} />
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Logout Button */}
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={handleLogout}
+          activeOpacity={0.85}
+        >
+          <Ionicons name="log-out-outline" size={22} color="#FFF" />
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -324,15 +338,25 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
+  statCardDark: {
+    backgroundColor: colors.cardBackground,
+    shadowColor: 'rgba(0,0,0,0.7)',
+  },
   statNumber: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#222',
   },
+  statNumberDark: {
+    color: colors.text,
+  },
   statLabel: {
     fontSize: 13,
     color: '#666',
     marginTop: 2,
+  },
+  statLabelDark: {
+    color: colors.textSecondary,
   },
   card: {
     backgroundColor: '#fff',
@@ -346,6 +370,10 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
+  cardDark: {
+    backgroundColor: colors.cardBackground,
+    shadowColor: 'rgba(0,0,0,0.7)',
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -354,8 +382,14 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
+  rowDark: {
+    borderBottomColor: colors.border,
+  },
   rowIcon: { marginRight: 16 },
   rowLabel: { flex: 1, fontSize: 16, color: '#222' },
+  rowLabelDark: {
+    color: colors.text,
+  },
   logoutButton: {
     backgroundColor: colors.error,
     borderRadius: 16,

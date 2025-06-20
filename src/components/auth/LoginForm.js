@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Formik } from 'formik';
 import EmailInputWithHistory from '../common/EmailInputWithHistory';
+import Logo from '../common/Logo';
 
 const LoginForm = ({ 
   validationSchema,
@@ -26,6 +27,10 @@ const LoginForm = ({
     >
       {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
         <View style={styles.formContainer}>
+          {/* Logo above email input */}
+          <View style={{ alignItems: 'center', marginBottom: 60 }}>
+            <Logo size="normal" />
+          </View>
           {/* Email Input */}
           <View style={styles.firstInputContainer}>
             <Text style={styles.inputLabel}>Email</Text>
@@ -46,10 +51,10 @@ const LoginForm = ({
               autoCapitalize="none"
               autoComplete="email"
             />
+            {touched.email && errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
           </View>
-          {touched.email && errors.email && (
-            <Text style={styles.errorText}>{errors.email}</Text>
-          )}
 
           {/* Password Input */}
           <View style={styles.inputContainer}>
@@ -78,10 +83,10 @@ const LoginForm = ({
                 />
               </TouchableOpacity>
             </View>
+            {touched.password && errors.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
           </View>
-          {touched.password && errors.password && (
-            <Text style={styles.errorText}>{errors.password}</Text>
-          )}
 
           {/* Forgot Password */}
           <TouchableOpacity style={styles.forgotPassword}>
