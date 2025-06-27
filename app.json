@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Cebu Tourist App",
-    "slug": "cebu-tourist-app",
+    "name": "TourMate",
+    "slug": "tourmate",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,14 +17,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cebutoursapp"
+      "bundleIdentifier": "com.tourmate"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.cebutoursapp"
+      "package": "com.tourmate"
     },
     "web": {
       "favicon": "./assets/favicon.png"

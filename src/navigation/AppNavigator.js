@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
+import AdminNavigator from './AdminNavigator';
 import AttractionDetails from '../screens/main/AttractionDetails';
 import EditProfileScreen from '../screens/profile/EditProfileScreen';
 import FavoriteSpotsScreen from '../screens/profile/FavoriteSpotsScreen';
@@ -51,6 +52,7 @@ function AppNavigatorContent() {
     >
         <Stack.Screen name="Auth" component={AuthNavigator} />
         <Stack.Screen name="MainApp" component={MainNavigator} />
+        <Stack.Screen name="Admin" component={AdminNavigator} />
         <Stack.Screen
           name="AttractionDetails"
           component={AttractionDetails}

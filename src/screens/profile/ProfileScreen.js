@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../services/firebase/firebaseConfig';
 import UserService from '../../services/user/UserService';
+import AdminAuthService from '../../services/auth/AdminAuthService';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getThemeColors } from '../../utils/theme';
 import favoritesService from '../../services/api/favoritesService';
@@ -31,6 +32,7 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [reviewsCount, setReviewsCount] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Load favorites and reviews counts
   const loadCounts = async () => {
@@ -57,6 +59,42 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
     }
   };
 
+  // Check if current user is admin
+  const checkAdminStatus = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const adminCheck = await AdminAuthService.checkIfAdmin(currentUser);
+        setIsAdmin(adminCheck.isAdmin);
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdmin(false);
+    }
+  };
+
+  // Handle admin navigation based on role
+  const handleAdminNavigation = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) return;
+
+      const adminRole = await AdminAuthService.getAdminRole(currentUser.email);
+      
+      if (adminRole === 'lgu_admin' || adminRole === 'reports_admin') {
+        // Navigate directly to admin dashboard for all admin types
+        navigation.navigate('Admin', { screen: 'AdminDashboard' });
+      } else {
+        // Fallback to regular admin navigation
+        navigation.navigate('Admin');
+      }
+    } catch (error) {
+      console.error('Error handling admin navigation:', error);
+      // Fallback navigation
+      navigation.navigate('Admin');
+    }
+  };
+
   // Refresh user data when screen focuses or user changes
   useEffect(() => {
     const refreshUserData = async () => {
@@ -76,6 +114,8 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
       }
       // Load counts after user data
       await loadCounts();
+      // Check admin status
+      await checkAdminStatus();
     };
 
     // Refresh data when screen loads
@@ -150,6 +190,14 @@ const ProfileScreen = ({ navigation, route, userData: userDataProp }) => {
       accessibilityLabel: 'Settings',
       accessibilityHint: 'Open app settings and preferences',
     },
+    ...(isAdmin ? [{
+      id: '10',
+      title: 'Admin Panel',
+      icon: 'shield-checkmark-outline',
+      action: handleAdminNavigation,
+      accessibilityLabel: 'Admin Panel',
+      accessibilityHint: 'Access administrative functions',
+    }] : []),
     {
       id: '9',
       title: 'Help & Support',

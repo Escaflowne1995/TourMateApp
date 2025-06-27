@@ -3,6 +3,7 @@ import UserService from '../services/user/UserService';
 import NavigationService from '../services/navigation/NavigationService';
 import AlertService from '../utils/alert/AlertService';
 import EmailHistoryService from '../services/storage/EmailHistoryService';
+import AdminAuthService from '../services/auth/AdminAuthService';
 
 class LoginController {
   constructor(securityService) {
@@ -44,7 +45,23 @@ class LoginController {
       }
     }
 
-    NavigationService.navigateToMainApp(navigation, userResult.userData);
+    // Check admin role and redirect accordingly
+    const adminRole = await AdminAuthService.getAdminRole(email);
+    if (adminRole) {
+      if (__DEV__) {
+        console.log('✅ Admin login success, role:', adminRole, 'email:', email);
+      }
+      
+      // LGU admins go directly to admin dashboard
+      if (adminRole === 'lgu_admin') {
+        navigation.navigate('Admin', { screen: 'AdminDashboard' });
+      } else if (adminRole === 'reports_admin') {
+        // Reports admins also go to admin dashboard (they'll see limited features)
+        navigation.navigate('Admin', { screen: 'AdminDashboard' });
+      }
+    } else {
+      NavigationService.navigateToMainApp(navigation, userResult.userData);
+    }
 
     if (__DEV__) {
       console.log('✅ Login success:', userResult.userData.email);
