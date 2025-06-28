@@ -28,9 +28,9 @@ const Logo = ({ size = 'normal' }) => {
         />
       </View>
       
-      {/* WEGO Text */}
-      <Text style={[styles.title, { fontSize: titleSize }]}>WEGO</Text>
-      <Text style={[styles.subtitle, { fontSize: subtitleSize }]}>Everywhere you go, WEGO!</Text>
+      {/* TourMate Text */}
+      <Text style={[styles.title, { fontSize: titleSize }]}>TourMate</Text>
+      <Text style={[styles.subtitle, { fontSize: subtitleSize }]}>Your Travel Companion</Text>
     </View>
   );
 };

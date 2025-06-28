@@ -100,31 +100,23 @@ const Signup = ({ navigation, route }) => {
       // Save email to history for future login suggestions
       await EmailHistoryService.saveEmail(values.email);
       
-      // Navigate directly to main app after successful signup
-      const userData = {
-        uid: user.uid,
-        email: values.email,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        fullName: fullName,
-        phone: values.phone || '',
-        avatar: 'https://via.placeholder.com/150/cccccc/969696?text=User',
-        location: '',
-      };
-
-      navigation.reset({
-        index: 0,
-        routes: [{ 
-          name: 'MainApp', 
-          params: { 
-            userEmail: userData.email,
-            userName: userData.fullName,
-            userPhone: userData.phone,
-            userAvatar: userData.avatar,
-            userData: userData
-          } 
-        }],
-      });
+      // Show success message and navigate to login screen
+      Alert.alert(
+        'Account Created Successfully!',
+        'Your account has been created. Please log in with your new credentials.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Navigate to login screen with the email pre-filled
+              navigation.navigate('Login', { 
+                email: values.email,
+                signupSuccess: true 
+              });
+            }
+          }
+        ]
+      );
       
     } catch (error) {
       console.error('Signup error:', error);

@@ -34,15 +34,15 @@ const LandingScreen = ({ navigation }) => {
         <View style={styles.featuresContainer}>
           <View style={styles.featureItem}>
             <Ionicons name="map-outline" size={28} color={colors.primary} />
-            <Text style={styles.featureText}>Explore Historical Sites</Text>
+            <Text style={styles.featureText}>Discover Amazing Places</Text>
           </View>
           <View style={styles.featureItem}>
             <Ionicons name="water-outline" size={28} color={colors.primary} />
-            <Text style={styles.featureText}>Beautiful Beaches</Text>
+            <Text style={styles.featureText}>Beautiful Destinations</Text>
           </View>
           <View style={styles.featureItem}>
             <Ionicons name="restaurant-outline" size={28} color={colors.primary} />
-            <Text style={styles.featureText}>Local Cuisine</Text>
+            <Text style={styles.featureText}>Local Experiences</Text>
           </View>
         </View>
 
@@ -74,14 +74,14 @@ const LandingScreen = ({ navigation }) => {
 const getStyles = (colors, isDarkMode) => StyleSheet.create({
   content: {
     flex: 1,
-    justifyContent: 'space-between',
     paddingTop: 20,
     paddingBottom: 40,
   },
   header: {
     alignItems: 'center',
     paddingHorizontal: 20,
-    padding: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
   },
   title: {
     fontSize: 32,
@@ -104,6 +104,7 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
   },
   featuresContainer: {
     paddingHorizontal: 20,
+    marginBottom: 40,
   },
   featureItem: {
     flexDirection: 'row',
@@ -127,6 +128,7 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
   },
   buttonContainer: {
     paddingHorizontal: 20,
+    marginBottom: 30,
   },
   button: {
     borderRadius: 25,

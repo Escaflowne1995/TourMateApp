@@ -7,10 +7,14 @@ import useLoginLogic from '../../hooks/useLoginLogic';
 import { getLoginStyles } from '../../styles/authStyles';
 import FirebaseDebug from '../../utils/debug/FirebaseDebug';
 
-const Login = ({ navigation }) => {
+const Login = ({ navigation, route }) => {
   const { isDarkMode } = useTheme();
   const colors = getThemeColors(isDarkMode);
   const styles = getLoginStyles(colors, isDarkMode);
+
+  // Get initial email from route params (from signup redirect)
+  const initialEmail = route?.params?.email || '';
+  const signupSuccess = route?.params?.signupSuccess || false;
 
   // ✅ All login logic is here via custom hook
   const {
@@ -39,6 +43,7 @@ const Login = ({ navigation }) => {
         navigation={navigation}
         showPassword={showPassword}
         setShowPassword={setShowPassword}
+        initialEmail={initialEmail}
       />
     </AuthScreenLayout>
   );

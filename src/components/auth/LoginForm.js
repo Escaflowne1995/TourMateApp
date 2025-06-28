@@ -16,11 +16,12 @@ const LoginForm = ({
   styles,
   navigation,
   showPassword,
-  setShowPassword
+  setShowPassword,
+  initialEmail = ''
 }) => {
   return (
     <Formik
-      initialValues={{ email: '', password: '' }}
+      initialValues={{ email: initialEmail, password: '' }}
       validationSchema={validationSchema}
       onSubmit={onSubmit}
       enableReinitialize={true}
