@@ -3,19 +3,26 @@ import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/aut
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Environment } from '../../config/environment';
+import { ErrorHandler } from '../../utils/ErrorHandler';
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyAZSM44g_4krJ8zbeQMlwQJF7VvcDa09vM",
-  authDomain: "tourismapp-82791.firebaseapp.com",
-  projectId: "tourismapp-82791",
-  storageBucket: "tourismapp-82791.firebasestorage.app",
-  messagingSenderId: "830491999664",
-  appId: "1:830491999664:web:38ff52fa6fe313be01aa75"
-};
+// Validate Firebase configuration
+if (!Environment.isConfigurationValid()) {
+  throw new Error('Firebase configuration is invalid. Please check your environment variables.');
+}
+
+// Firebase configuration from environment variables
+const firebaseConfig = Environment.FIREBASE_CONFIG;
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+  console.log('Firebase app initialized successfully');
+} catch (error) {
+  ErrorHandler.logError(error, 'Firebase App Initialization');
+  throw new Error('Failed to initialize Firebase app: ' + error.message);
+}
 
 // Initialize Firebase Authentication with AsyncStorage persistence
 let auth;
@@ -27,6 +34,7 @@ try {
       auth = initializeAuth(app, {
         persistence: persistence
       });
+      console.log('Firebase Auth initialized with persistence');
     } else {
       console.warn('React Native persistence not available, using default auth');
       auth = initializeAuth(app);
@@ -41,18 +49,30 @@ try {
   try {
     auth = getAuth(app);
   } catch (getAuthError) {
-    console.error('Failed to get auth instance:', getAuthError.message);
+    ErrorHandler.logError(getAuthError, 'Firebase Auth Fallback');
     // Fallback to basic auth initialization
     auth = initializeAuth(app);
   }
 }
 
-export { auth };
+// Initialize Cloud Firestore with error handling
+let db;
+try {
+  db = getFirestore(app);
+  console.log('Firestore initialized successfully');
+} catch (error) {
+  ErrorHandler.logError(error, 'Firestore Initialization');
+  throw new Error('Failed to initialize Firestore: ' + error.message);
+}
 
-// Initialize Cloud Firestore and get a reference to the service
-export const db = getFirestore(app);
+// Initialize Firebase Storage with error handling
+let storage;
+try {
+  storage = getStorage(app);
+  console.log('Firebase Storage initialized successfully');
+} catch (error) {
+  ErrorHandler.logError(error, 'Firebase Storage Initialization');
+  throw new Error('Failed to initialize Firebase Storage: ' + error.message);
+}
 
-// Initialize Firebase Storage and get a reference to the service
-export const storage = getStorage(app);
-
-export { app }; 
+export { auth, db, storage, app }; 

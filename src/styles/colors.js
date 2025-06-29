@@ -35,6 +35,10 @@ export const LightColors = {
   tropicalGreen: '#4CAF50', // Lush vegetation
   sandBeige: '#F5E6D3', // Sandy beaches
   coralPink: '#FF5722', // Coral reefs
+  
+  // UI Enhancement colors
+  overlay: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
+  shadow: 'rgba(0, 0, 0, 0.1)', // Subtle shadow
 };
 
 export const DarkColors = {
@@ -74,6 +78,10 @@ export const DarkColors = {
   tropicalGreen: '#66BB6A', // Bright green
   sandBeige: '#8D6E63', // Warm brown
   coralPink: '#FF7043', // Bright coral
+  
+  // UI Enhancement colors for dark mode
+  overlay: 'rgba(0, 0, 0, 0.8)', // Darker overlay for dark mode
+  shadow: 'rgba(255, 255, 255, 0.1)', // Light shadow for dark mode
 };
 
 // Legacy export for backward compatibility

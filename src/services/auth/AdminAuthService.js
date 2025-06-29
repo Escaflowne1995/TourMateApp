@@ -1,25 +1,14 @@
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
 import AuthService from './AuthService';
+import { Environment } from '../../config/environment';
 
 // Admin authentication service with role-based access
 class AdminAuthService extends AuthService {
   
-  // Predefined admin emails with roles
-  static adminEmails = [
-    'admin@touristapp.com',
-    'superadmin@touristapp.com',
-    'reports.admin@touristapp.com'
-  ];
-
-  // LGU Admin emails - for Local Government Unit content management
-  static lguAdminEmails = [
-    'lgu.cebu@touristapp.com',
-    'cebu.tourism@touristapp.com',
-    'lgu.admin@touristapp.com',
-    'tourism.officer@cebu.gov.ph',
-    'content.manager@cebu.gov.ph'
-  ];
+  // Admin email lists from environment configuration
+  static adminEmails = Environment.ADMIN_EMAILS;
+  static lguAdminEmails = Environment.LGU_ADMIN_EMAILS;
 
   static async checkIfAdmin(user) {
     try {
