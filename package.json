@@ -3,8 +3,28 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
-    "web": "expo start --web"
+    "start": "npx expo start",
+    "start:dev": "NODE_ENV=development npx expo start",
+    "start:staging": "NODE_ENV=staging npx expo start",
+    "start:production": "NODE_ENV=production npx expo start",
+    "start:clear": "npx expo start --clear",
+    "web": "npx expo start --web",
+    "build:dev": "npx eas build --profile development",
+    "build:preview": "npx eas build --profile preview",
+    "build:production": "npx eas build --profile production",
+    "build:apk": "npx eas build --platform android --profile production-apk",
+    "build:apk-preview": "npx eas build --platform android --profile preview-apk",
+    "submit:ios": "npx eas submit --platform ios",
+    "submit:android": "npx eas submit --platform android",
+    "update": "npx eas update",
+    "doctor": "npx expo-doctor",
+    "install:fix": "npx expo install --fix",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "test": "jest",
+    "clean": "npx expo start --clear && npm run clean:cache",
+    "clean:cache": "rm -rf node_modules/.cache .expo",
+    "prebuild": "npx expo prebuild --clean"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -12,7 +32,7 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/stack": "^6.3.20",
-    "expo": "~53.0.0",
+    "expo": "53.0.13",
     "expo-image-manipulator": "~13.1.7",
     "expo-image-picker": "~16.1.4",
     "expo-linear-gradient": "~14.1.5",
@@ -26,7 +46,7 @@
     "react-native-gesture-handler": "~2.24.0",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
-    "react-native-svg": "^15.11.2",
+    "react-native-svg": "15.11.2",
     "react-native-svg-transformer": "^1.1.0",
     "yup": "^1.6.1"
   },
@@ -46,6 +66,13 @@
     "prettier": "2.8.8",
     "react-test-renderer": "19.0.0",
     "typescript": "~5.8.3"
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "enabled": false
+      }
+    }
   },
   "private": true
 }

@@ -1,8 +1,9 @@
-import { signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from '../firebase/firebaseConfig';
+import { ErrorHandler } from '../../utils/ErrorHandler';
 
 // Single Responsibility: Only handles authentication
-class AuthService {
+export class AuthService {
   static async login(email, password) {
     try {
       console.log('AuthService: Attempting to sign in with email:', email);
@@ -63,6 +64,26 @@ class AuthService {
       'default': 'Login failed. Please check your credentials.'
     };
     return errorMessages[errorCode] || errorMessages.default;
+  }
+
+  static async signIn(email, password) {
+    return ErrorHandler.handleAsyncOperation(async () => {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      return userCredential.user;
+    }, 'AuthService.signIn');
+  }
+
+  static async signUp(email, password) {
+    return ErrorHandler.handleAsyncOperation(async () => {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      return userCredential.user;
+    }, 'AuthService.signUp');
+  }
+
+  static async signOut() {
+    return ErrorHandler.handleAsyncOperation(async () => {
+      await signOut(auth);
+    }, 'AuthService.signOut');
   }
 }
 
