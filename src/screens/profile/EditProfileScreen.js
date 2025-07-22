@@ -204,8 +204,8 @@ const EditProfileScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: '#fff' }]}>
-      <ScrollView style={styles.scrollView} accessible={true} accessibilityLabel="Edit Profile Screen">
+    <View style={[styles.container, { backgroundColor: '#fff' }]}> 
+      <View accessible={true} accessibilityLabel="Edit Profile Screen">
         <View style={styles.profileImageSection}>
           <TouchableOpacity onPress={handleChangeAvatar} style={styles.avatarContainer}>
             <Image
@@ -299,7 +299,7 @@ const EditProfileScreen = ({ navigation, route }) => {
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 };

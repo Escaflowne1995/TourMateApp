@@ -445,8 +445,9 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 40, // increased space above
+    marginBottom: 8, // decreased space below
+    marginHorizontal: 18, // align sides with menu items
     shadowColor: colors.error,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

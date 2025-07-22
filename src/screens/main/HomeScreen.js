@@ -121,6 +121,7 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
   },
   welcomeBackground: {
     flex: 1,
+    overflow: 'hidden',
   },
   welcomeGradient: {
     height: 650,

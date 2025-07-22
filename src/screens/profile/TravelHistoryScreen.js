@@ -144,6 +144,10 @@ const TravelHistoryScreen = ({ navigation }) => {
             </View>
           )}
         </View>
+        {/* Add Rate this place button/text below places images */}
+        <TouchableOpacity style={[styles.rateButton]} activeOpacity={0.85} onPress={() => { /* TODO: Implement rate action */ }}>
+          <Text style={styles.rateButtonText}>Rate this place</Text>
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -380,6 +384,19 @@ const getStyles = (colors, isDarkMode) => StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  rateButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginTop: 15,
+    alignSelf: 'flex-start',
+  },
+  rateButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 
